@@ -67,7 +67,7 @@ public class PlayerControllerScript : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
 
-    // Update is called once per frame
+    // FixedUpdate is called once per Unity physics cycle
     void FixedUpdate()
     {
         PhysicsCalcInit();
@@ -83,6 +83,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
         else if (state == State.Ground)
         {
+            GroundSnap();
             Turn();
             Move();
             Friction();
@@ -100,11 +101,14 @@ public class PlayerControllerScript : MonoBehaviour
 /// Spacing between main and general funtion declaration.
 /// 
 /// 
+/// TBD:
+/// - add air drag funtion to stop infinite acceleration when in air
+/// - add 
 /// 
 /// </summary>
 
-
-    public Vector2 GetMovementVectorNormalized() 
+    //stores the  move input direction as a Vector2
+    private Vector2 GetMovementVectorNormalized() 
     {
         //getting the input
         Vector2 inputVector = playerInputActions.Keyboard.Move.ReadValue<Vector2>();
@@ -113,16 +117,19 @@ public class PlayerControllerScript : MonoBehaviour
         return inputVector;
     }
 
+    //stores the jump input as a float
     private float JumpInput() 
     {
         return playerInputActions.Keyboard.Jump.ReadValue<float>();
     }
 
+    //set physics to initial state before being calculated each physics cycle
     private void PhysicsCalcInit() 
     {
         velocity = Vector3.zero;
     }
 
+    //applies the calculated velocity of the current cycle to the Player
     private void ApplyForces() 
     {
         RB.velocity += velocity;
@@ -135,7 +142,7 @@ public class PlayerControllerScript : MonoBehaviour
         playerTransform.forward = cameraFlatForward;
     }
 
-    // funtion to apply movement forces to RB velocity
+    // funtion to apply movement forces to velocity
     private void Move() 
     {
         Vector2 inputVector = GetMovementVectorNormalized();
@@ -199,5 +206,10 @@ public class PlayerControllerScript : MonoBehaviour
         {
             state = State.Air;
         }
+    }
+
+    private void GroundSnap() 
+    {
+        playerTransform.position = groundedRayPoint.point;
     }
 } 
