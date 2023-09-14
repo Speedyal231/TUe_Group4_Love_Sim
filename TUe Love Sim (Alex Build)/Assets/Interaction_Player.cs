@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class Interaction_Player : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject camera;
+    private PlayerInputActions playerInputActions;
     private RaycastHit hit;
+
+    private void Awake()
+    {
+        //enable player input script.
+        playerInputActions = new PlayerInputActions();
+        playerInputActions.Enable();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,10 +25,10 @@ public class Interaction_Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (playerInputActions.Keyboard.Interact.ReadValue<float>() == 1) 
         {
-            float interactionRange = 2f;
-            if (Physics.Raycast(transform.position, transform.forward, out hit, interactionRange))
+            float interactionRange = 20f;
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, interactionRange))
             {
                 if (hit.collider.TryGetComponent(out Interactable interactable))
                 {

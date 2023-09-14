@@ -120,6 +120,7 @@ public class PlayerControllerScript : MonoBehaviour
     //stores the jump input as a float
     private float JumpInput() 
     {
+        Debug.Log(playerInputActions.Keyboard.Jump.ReadValue<float>());
         return playerInputActions.Keyboard.Jump.ReadValue<float>();
     }
 
