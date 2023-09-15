@@ -19,7 +19,7 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] float accelerationFriction;
     [SerializeField] float groundMaxSpeed;
     [SerializeField] float wallTouchThreshold;
-    [SerializeField] float SphereRayOffset;
+    [SerializeField] float sphereRayOffset;
     Vector3 velocity;
     bool wallBound;
     RaycastHit wallPointHit;
@@ -162,7 +162,6 @@ public class PlayerControllerScript : MonoBehaviour
     // funtion to apply movement forces to velocity
     private void Move(Vector3 movingForce) 
     {
-        Debug.Log(movingForce);
         velocity += movingForce;
     }
 
@@ -253,16 +252,16 @@ public class PlayerControllerScript : MonoBehaviour
     private void WallCheck(Vector3 movingForce) 
     {
 
-        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (SphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + SphereRayOffset);        
-        
+        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);        
+        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
+        Debug.Log(wallBound);
     }
 
     private void WallUnstick(Vector3 movingForce) 
     {
         if(wallBound) 
         {
-            velocity += wallPointHit.normal.normalized * movingForce.magnitude;
-            Debug.Log("unwallBound");
+            velocity += Vector3.ProjectOnPlane(wallPointHit.normal,Vector3.up).normalized * movingForce.magnitude;
         }
     }
 } 
