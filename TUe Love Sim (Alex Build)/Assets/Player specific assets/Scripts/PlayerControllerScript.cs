@@ -10,6 +10,7 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] Rigidbody RB;
     [SerializeField] Transform playerTransform;
     [SerializeField] Transform cameraTransform;
+    [SerializeField] CapsuleCollider capsuleCollider;
     private PlayerInputActions playerInputActions;
 
     //Variables that contribute to the general character movement
@@ -17,7 +18,11 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] float acceleration;
     [SerializeField] float accelerationFriction;
     [SerializeField] float groundMaxSpeed;
+    [SerializeField] float wallTouchThreshold;
+    [SerializeField] float floorSphereOffset;
     Vector3 velocity;
+    bool wallBound;
+    RaycastHit wallPointHit;
 
     //Variables that contribute to and store object collisions and raycast data
     [Header("Ground Detection")]
@@ -75,6 +80,7 @@ public class PlayerControllerScript : MonoBehaviour
         PhysicsCalcInit();
         GroundedCheck();
         StateSwitch();
+        WallCheck();
         
         if (state == State.Air) 
         {
@@ -239,5 +245,13 @@ public class PlayerControllerScript : MonoBehaviour
         
             }
         } 
+    }
+
+    private void WallCheck() 
+    {
+        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height - capsuleCollider.radius)), capsuleCollider.radius + wallTouchThreshold, transform.forward, out wallPointHit, capsuleCollider.height - capsuleCollider.radius * 2 - wallTouchThreshold - floorSphereOffset);
+        
+        Debug.Log(wallBound);
+        
     }
 } 
