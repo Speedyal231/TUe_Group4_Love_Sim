@@ -70,7 +70,7 @@ public class CameraMovement : MonoBehaviour
         float deltaYAngle = deltaVector.y * sensitivity;
         
         rotationX -= deltaYAngle;
-        rotationX = Mathf.Clamp(rotationX, -90f, 90f);
+        rotationX = Mathf.Clamp(rotationX, -85f, 85f);
         rotationY -= -deltaXAngle;
         //rotationY = Mathf.Clamp(rotationY, -90f, 90f);
         camTransform.localRotation = Quaternion.Euler(rotationX, rotationY, 0);

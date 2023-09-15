@@ -31,6 +31,8 @@ public class PlayerControllerScript : MonoBehaviour
     [Header("Air Variables")]
     [SerializeField] float gravity;
     [SerializeField] float jumpHeight;
+    [SerializeField] float airDrag;
+    [SerializeField] float airMaxSpeed;
 
 
 
@@ -79,6 +81,7 @@ public class PlayerControllerScript : MonoBehaviour
             Turn();
             Move();
             Gravity();
+            AirDrag();
             
         }
         else if (state == State.Ground)
@@ -211,5 +214,30 @@ public class PlayerControllerScript : MonoBehaviour
     private void GroundSnap() 
     {
         playerTransform.position = groundedRayPoint.point;
+    }
+
+    private void AirDrag() 
+    {
+        Vector3 XZPlanarVelocity = Vector3.ProjectOnPlane(RB.velocity, playerTransform.up);
+        if (XZPlanarVelocity.magnitude != 0f) 
+        {
+            if (XZPlanarVelocity.magnitude >= airMaxSpeed) 
+            {
+                velocity -= XZPlanarVelocity.normalized * acceleration;
+            } 
+            else 
+            {
+                
+                if (XZPlanarVelocity.magnitude <  airDrag) 
+                {
+                    velocity -= XZPlanarVelocity;
+                } 
+                else 
+                {
+                    velocity -= XZPlanarVelocity.normalized * airDrag;
+                }
+        
+            }
+        } 
     }
 } 
