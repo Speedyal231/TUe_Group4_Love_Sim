@@ -1264,7 +1264,7 @@ MonoBehaviour:
   accelerationFriction: 1.5
   groundMaxSpeed: 20
   wallTouchThreshold: 0.4
-  floorSphereOffset: 0.2
+  SphereRayOffset: 0.1
   rayOriginOffset: 0.2
   groundHitRange: 0.2
   groundLayer:

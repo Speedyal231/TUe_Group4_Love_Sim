@@ -19,7 +19,7 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] float accelerationFriction;
     [SerializeField] float groundMaxSpeed;
     [SerializeField] float wallTouchThreshold;
-    [SerializeField] float floorSphereOffset;
+    [SerializeField] float SphereRayOffset;
     Vector3 velocity;
     bool wallBound;
     RaycastHit wallPointHit;
@@ -77,15 +77,17 @@ public class PlayerControllerScript : MonoBehaviour
     // FixedUpdate is called once per Unity physics cycle
     void FixedUpdate()
     {
+        Vector3 movingForce = GetMovementVectorNormalized();
         PhysicsCalcInit();
         GroundedCheck();
         StateSwitch();
-        WallCheck();
+        WallCheck(movingForce);
         
         if (state == State.Air) 
         {
             Turn();
-            Move();
+            Move(movingForce);
+            WallUnstick(movingForce);
             Gravity();
             AirDrag();
             
@@ -94,7 +96,8 @@ public class PlayerControllerScript : MonoBehaviour
         {
             GroundSnap();
             Turn();
-            Move();
+            Move(movingForce);
+            WallUnstick(movingForce);
             Friction();
             Jump();
         }
@@ -117,13 +120,18 @@ public class PlayerControllerScript : MonoBehaviour
 /// </summary>
 
     //stores the  move input direction as a Vector2
-    private Vector2 GetMovementVectorNormalized() 
+    // consider implement input collection at start of update to sfae precessing times
+    private Vector3 GetMovementVectorNormalized() 
     {
         //getting the input
         Vector2 inputVector = playerInputActions.Keyboard.Move.ReadValue<Vector2>();
         inputVector = inputVector.magnitude > 1 ? inputVector.normalized : inputVector;
+        Vector3 frontalForce = inputVector.y * playerTransform.forward.normalized;
+        Vector3 rightForce = inputVector.x * playerTransform.right.normalized;
+
+        Vector3 movingForce = (frontalForce + rightForce) * acceleration;
     
-        return inputVector;
+        return movingForce;
     }
 
     //stores the jump input as a float
@@ -152,14 +160,9 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     // funtion to apply movement forces to velocity
-    private void Move() 
+    private void Move(Vector3 movingForce) 
     {
-        Vector2 inputVector = GetMovementVectorNormalized();
-        Vector3 frontalForce = inputVector.y * playerTransform.forward.normalized;
-        Vector3 rightForce = inputVector.x * playerTransform.right.normalized;
-
-        Vector3 movingForce = (frontalForce + rightForce) * acceleration;
-
+        Debug.Log(movingForce);
         velocity += movingForce;
     }
 
@@ -247,11 +250,19 @@ public class PlayerControllerScript : MonoBehaviour
         } 
     }
 
-    private void WallCheck() 
+    private void WallCheck(Vector3 movingForce) 
     {
-        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height - capsuleCollider.radius)), capsuleCollider.radius + wallTouchThreshold, transform.forward, out wallPointHit, capsuleCollider.height - capsuleCollider.radius * 2 - wallTouchThreshold - floorSphereOffset);
+
+        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (SphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + SphereRayOffset);        
         
-        Debug.Log(wallBound);
-        
+    }
+
+    private void WallUnstick(Vector3 movingForce) 
+    {
+        if(wallBound) 
+        {
+            velocity += wallPointHit.normal.normalized * movingForce.magnitude;
+            Debug.Log("unwallBound");
+        }
     }
 } 
