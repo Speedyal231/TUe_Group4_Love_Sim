@@ -23,6 +23,7 @@ public class PlayerControllerScript : MonoBehaviour
     Vector3 velocity;
     bool wallBound;
     RaycastHit wallPointHit;
+    Vector3 prevWallNormal = Vector3.up;
 
     //Variables that contribute to and store object collisions and raycast data
     [Header("Ground Detection")]
@@ -36,8 +37,14 @@ public class PlayerControllerScript : MonoBehaviour
     [Header("Air Variables")]
     [SerializeField] float gravity;
     [SerializeField] float jumpHeight;
+    [SerializeField] float wallJumpMultiplier;
+    [SerializeField] float wallBounceMultiplier;
+    [SerializeField] float wallJumpThreshold;
     [SerializeField] float airDrag;
     [SerializeField] float airMaxSpeed;
+    bool canWallJump;
+
+    bool canJump;
 
 
 
@@ -82,6 +89,7 @@ public class PlayerControllerScript : MonoBehaviour
         GroundedCheck();
         StateSwitch();
         WallCheck(movingForce);
+        WallJumpCheck(movingForce);
         
         if (state == State.Air) 
         {
@@ -90,6 +98,7 @@ public class PlayerControllerScript : MonoBehaviour
             WallUnstick(movingForce);
             Gravity();
             AirDrag();
+            Jump();
             
         }
         else if (state == State.Ground)
@@ -114,8 +123,11 @@ public class PlayerControllerScript : MonoBehaviour
 /// 
 /// 
 /// TBD:
-/// - add air drag funtion to stop infinite acceleration when in air
-/// - add 
+/// - add potential wall jump regions by making empty hitboxes that act as wall jump spots on top of walls
+/// - fix the jump funtion (either make jump dynamic or dont)
+/// - make wall jump more less broken.
+/// / make wall jump range bigger
+/// - potentially make it so you have to press again to wall jump
 /// 
 /// </summary>
 
@@ -202,9 +214,44 @@ public class PlayerControllerScript : MonoBehaviour
 
     private void Jump() 
     {
-        
-        velocity += playerTransform.up.normalized * jumpHeight * JumpInput();
+        if (state == State.Ground)
+        {
+            canJump = true;
+            prevWallNormal = Vector3.up;
+        }
+        else if (state == State.Air)
+        {
+            if (canWallJump && prevWallNormal != wallPointHit.normal.normalized)
+            {
+                canJump = true;
+            }
+            else 
+            {
+                canJump = false;
+            } 
+        }
 
+        float JumpVal = JumpInput();
+
+        if (JumpVal > 0) 
+        {
+            if (canJump) 
+            {
+                canJump = false;
+                if (state == State.Ground) 
+                {
+                    velocity += playerTransform.up.normalized * jumpHeight * JumpVal;
+                } else if (state == State.Air) 
+                {
+                    if (canWallJump) 
+                    {
+                        prevWallNormal = wallPointHit.normal;
+                        velocity.y -= (-RB.velocity.y > gravity) ? RB.velocity.y : 0;
+                        velocity += playerTransform.up.normalized * jumpHeight * wallJumpMultiplier *JumpVal + Vector3.ProjectOnPlane(wallPointHit.normal, transform.up).normalized * wallBounceMultiplier * jumpHeight;
+                    }
+                }
+            }
+        }
     }
 
     private void StateSwitch() 
@@ -219,6 +266,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
+    // improve snap
     private void GroundSnap() 
     {
         playerTransform.position = groundedRayPoint.point;
@@ -254,7 +302,13 @@ public class PlayerControllerScript : MonoBehaviour
 
         wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);        
         //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
-        Debug.Log(wallBound);
+    }
+
+    private void WallJumpCheck(Vector3 movingForce) 
+    {
+
+        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallJumpThreshold + sphereRayOffset);        
+        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
     }
 
     private void WallUnstick(Vector3 movingForce) 
@@ -264,4 +318,5 @@ public class PlayerControllerScript : MonoBehaviour
             velocity += Vector3.ProjectOnPlane(wallPointHit.normal,Vector3.up).normalized * movingForce.magnitude;
         }
     }
+    
 } 
