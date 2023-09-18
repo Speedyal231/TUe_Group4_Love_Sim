@@ -8,4 +8,6 @@ public class Interactable : MonoBehaviour
     {
         Debug.Log("NPC interacts");
     }
+
+    /// program camera switch
 }

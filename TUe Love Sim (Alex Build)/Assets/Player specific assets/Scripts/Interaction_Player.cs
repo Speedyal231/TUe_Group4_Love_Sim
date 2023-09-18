@@ -9,6 +9,11 @@ public class Interaction_Player : MonoBehaviour
     private PlayerInputActions playerInputActions;
     private RaycastHit hit;
 
+
+    /// <summary>
+    /// Clean up the funtions and code here, and add a funtion to cause the interactable to glow when you can interact.
+    /// </summary>
+
     private void Awake()
     {
         //enable player input script.
