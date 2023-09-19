@@ -129,12 +129,6 @@ public class PlayerControllerScript : MonoBehaviour
 /// Spacing between main and general funtion declaration.
 /// 
 /// 
-/// TBD:
-/// - add potential wall jump regions by making empty hitboxes that act as wall jump spots on top of walls
-/// - fix the jump funtion (either make jump dynamic or dont)
-/// - make wall jump more less broken.
-/// / make wall jump range bigger
-/// - potentially make it so you have to press again to wall jump
 /// 
 /// </summary>
 
