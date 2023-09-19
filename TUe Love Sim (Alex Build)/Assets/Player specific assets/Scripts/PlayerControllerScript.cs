@@ -23,7 +23,8 @@ public class PlayerControllerScript : MonoBehaviour
     Vector3 velocity;
     bool wallBound;
     RaycastHit wallPointHit;
-    Vector3 prevWallNormal = Vector3.up;
+    RaycastHit wallJumpPointHit;
+    Vector3 prevWallNormal;
 
     //Variables that contribute to and store object collisions and raycast data
     [Header("Ground Detection")]
@@ -40,10 +41,15 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] float wallJumpMultiplier;
     [SerializeField] float wallBounceMultiplier;
     [SerializeField] float wallJumpThreshold;
+    [SerializeField] float wallClingTimer;
+    [SerializeField] float wallSpeedThreshHold;
     [SerializeField] float airDrag;
     [SerializeField] float airMaxSpeed;
+    float currentWallClingTimer;
     bool canWallJump;
-
+    bool hasWallJumped;
+    bool canCling;
+    bool endCling;
     bool canJump;
 
 
@@ -88,6 +94,7 @@ public class PlayerControllerScript : MonoBehaviour
         PhysicsCalcInit();
         GroundedCheck();
         StateSwitch();
+        Count();
         WallCheck(movingForce);
         WallJumpCheck(movingForce);
         
@@ -98,8 +105,8 @@ public class PlayerControllerScript : MonoBehaviour
             WallUnstick(movingForce);
             Gravity();
             AirDrag();
-            Jump();
-            
+            NewJump();
+            DYNAWallCling();
         }
         else if (state == State.Ground)
         {
@@ -108,7 +115,7 @@ public class PlayerControllerScript : MonoBehaviour
             Move(movingForce);
             WallUnstick(movingForce);
             Friction();
-            Jump();
+            NewJump();
         }
 
         ApplyForces();
@@ -151,17 +158,33 @@ public class PlayerControllerScript : MonoBehaviour
     {
         return playerInputActions.Keyboard.Jump.ReadValue<float>();
     }
+    
+    private float ShiftInput() 
+    {
+        return playerInputActions.Keyboard.Cling.ReadValue<float>();
+    }
 
     //set physics to initial state before being calculated each physics cycle
     private void PhysicsCalcInit() 
     {
         velocity = Vector3.zero;
+        if (state == State.Ground)
+        {
+            prevWallNormal = Vector3.up;
+            hasWallJumped = false;
+        }
     }
 
     //applies the calculated velocity of the current cycle to the Player
     private void ApplyForces() 
     {
         RB.velocity += velocity;
+    }
+
+    void Count()
+    {
+        if(currentWallClingTimer > 0)
+            currentWallClingTimer -= Time.fixedDeltaTime;
     }
 
     //function to keep player facing same direction as camera
@@ -212,45 +235,63 @@ public class PlayerControllerScript : MonoBehaviour
         velocity += Vector3.down.normalized * gravity;
     }
 
-    private void Jump() 
+    private void NewJump() 
     {
+        float jumpVal = JumpInput();
         if (state == State.Ground)
         {
-            canJump = true;
-            prevWallNormal = Vector3.up;
+            velocity += playerTransform.up.normalized * jumpHeight * jumpVal;
         }
         else if (state == State.Air)
         {
-            if (canWallJump && prevWallNormal != wallPointHit.normal.normalized)
+            if (canWallJump && jumpVal > 0 && !hasWallJumped) 
             {
-                canJump = true;
+                hasWallJumped = true;
+                velocity.y -= (-RB.velocity.y > gravity) ? RB.velocity.y : 0;
+                velocity += playerTransform.up.normalized * jumpHeight * wallJumpMultiplier *jumpVal + Vector3.ProjectOnPlane(wallJumpPointHit.normal, transform.up).normalized * wallBounceMultiplier * jumpHeight;
             }
-            else 
-            {
-                canJump = false;
-            } 
-        }
+        } 
+    }
 
-        float JumpVal = JumpInput();
-
-        if (JumpVal > 0) 
+    private void DYNAWallCling() 
+    {
+        float clingVal = ShiftInput();
+        if (canWallJump)
         {
-            if (canJump) 
+            if (clingVal > 0 && prevWallNormal != wallJumpPointHit.normal.normalized)
             {
-                canJump = false;
-                if (state == State.Ground) 
+                currentWallClingTimer = wallClingTimer;
+                canCling = true;
+                prevWallNormal = wallJumpPointHit.normal.normalized;
+                hasWallJumped = false;
+                
+            }
+            else if (clingVal > 0 && prevWallNormal == wallJumpPointHit.normal.normalized) 
+            {
+                if (currentWallClingTimer > 0 && !hasWallJumped) 
                 {
-                    velocity += playerTransform.up.normalized * jumpHeight * JumpVal;
-                } else if (state == State.Air) 
+                    canCling = true;
+                    endCling = false;
+                } 
+                else if (Vector3.ProjectOnPlane(RB.velocity, wallJumpPointHit.normal).magnitude >= wallSpeedThreshHold && !endCling && !hasWallJumped) 
                 {
-                    if (canWallJump) 
-                    {
-                        prevWallNormal = wallPointHit.normal;
-                        velocity.y -= (-RB.velocity.y > gravity) ? RB.velocity.y : 0;
-                        velocity += playerTransform.up.normalized * jumpHeight * wallJumpMultiplier *JumpVal + Vector3.ProjectOnPlane(wallPointHit.normal, transform.up).normalized * wallBounceMultiplier * jumpHeight;
-                    }
+                    canCling = true;
+                }
+                else
+                {
+                    canCling = false;
+                    endCling = true;
                 }
             }
+        }
+        else 
+        {
+            canCling = false;
+        }
+
+        if (canCling) 
+        {
+            velocity += -playerTransform.up * RB.velocity.y * ShiftInput();
         }
     }
 
@@ -307,7 +348,7 @@ public class PlayerControllerScript : MonoBehaviour
     private void WallJumpCheck(Vector3 movingForce) 
     {
 
-        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallJumpThreshold + sphereRayOffset);        
+        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallJumpPointHit, wallJumpThreshold + sphereRayOffset);        
         //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
     }
 

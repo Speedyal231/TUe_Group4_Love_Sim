@@ -5,7 +5,7 @@ using UnityEngine;
 public class Interaction_Player : MonoBehaviour
 {
     [SerializeField]
-    private GameObject camera;
+    private GameObject cameraPlayer;
     private PlayerInputActions playerInputActions;
     private RaycastHit hit;
 
@@ -33,7 +33,7 @@ public class Interaction_Player : MonoBehaviour
         if (playerInputActions.Keyboard.Interact.ReadValue<float>() == 1) 
         {
             float interactionRange = 20f;
-            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, interactionRange))
+            if (Physics.Raycast(cameraPlayer.transform.position, cameraPlayer.transform.forward, out hit, interactionRange))
             {
                 if (hit.collider.TryGetComponent(out Interactable interactable))
                 {
