@@ -244,7 +244,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
         else if (state == State.Air)
         {
-            if (canWallJump && jumpVal > 0 && !hasWallJumped) 
+            if (canWallJump && jumpVal > 0 && !hasWallJumped && canCling) 
             {
                 hasWallJumped = true;
                 velocity.y -= (-RB.velocity.y > gravity) ? RB.velocity.y : 0;
