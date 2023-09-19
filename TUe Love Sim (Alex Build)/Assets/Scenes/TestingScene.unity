@@ -1764,7 +1764,7 @@ MonoBehaviour:
   jumpHeight: 15
   wallJumpMultiplier: 2
   wallBounceMultiplier: 2.5
-  wallJumpThreshold: 0.1
+  wallJumpThreshold: 0.3
   wallClingTimer: 1.5
   wallSpeedThreshHold: 5
   airDrag: 1
