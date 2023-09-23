@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class NPCCombatScript : MonoBehaviour
 {
+    [SerializeField] string message;
     // Start is called before the first frame update
-    void Start()
+    public void Damaged()
     {
-        
+        Debug.Log(message);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

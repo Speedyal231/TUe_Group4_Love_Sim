@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Interactable : MonoBehaviour
 {
+   
    public void Interact()
     {
-        Debug.Log("NPC interacts");
+        Debug.Log("yoyoyo");
     }
 
     /// program camera switch

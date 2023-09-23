@@ -71,6 +71,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Punch"",
+                    ""type"": ""Value"",
+                    ""id"": ""fbb70fda-a7d1-46e6-a6c3-16ae1580fbe4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -227,6 +236,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Cling"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb33ab4b-36be-490a-a757-a6d1e2e1c857"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Punch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -240,6 +260,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Keyboard_Look = m_Keyboard.FindAction("Look", throwIfNotFound: true);
         m_Keyboard_Interact = m_Keyboard.FindAction("Interact", throwIfNotFound: true);
         m_Keyboard_Cling = m_Keyboard.FindAction("Cling", throwIfNotFound: true);
+        m_Keyboard_Punch = m_Keyboard.FindAction("Punch", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -306,6 +327,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Keyboard_Look;
     private readonly InputAction m_Keyboard_Interact;
     private readonly InputAction m_Keyboard_Cling;
+    private readonly InputAction m_Keyboard_Punch;
     public struct KeyboardActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -315,6 +337,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Keyboard_Look;
         public InputAction @Interact => m_Wrapper.m_Keyboard_Interact;
         public InputAction @Cling => m_Wrapper.m_Keyboard_Cling;
+        public InputAction @Punch => m_Wrapper.m_Keyboard_Punch;
         public InputActionMap Get() { return m_Wrapper.m_Keyboard; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -339,6 +362,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Cling.started += instance.OnCling;
             @Cling.performed += instance.OnCling;
             @Cling.canceled += instance.OnCling;
+            @Punch.started += instance.OnPunch;
+            @Punch.performed += instance.OnPunch;
+            @Punch.canceled += instance.OnPunch;
         }
 
         private void UnregisterCallbacks(IKeyboardActions instance)
@@ -358,6 +384,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Cling.started -= instance.OnCling;
             @Cling.performed -= instance.OnCling;
             @Cling.canceled -= instance.OnCling;
+            @Punch.started -= instance.OnPunch;
+            @Punch.performed -= instance.OnPunch;
+            @Punch.canceled -= instance.OnPunch;
         }
 
         public void RemoveCallbacks(IKeyboardActions instance)
@@ -382,5 +411,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnCling(InputAction.CallbackContext context);
+        void OnPunch(InputAction.CallbackContext context);
     }
 }
