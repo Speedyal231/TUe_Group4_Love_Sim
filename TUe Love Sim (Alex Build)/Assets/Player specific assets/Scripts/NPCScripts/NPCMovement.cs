@@ -94,7 +94,7 @@ public class NPCMovement : MonoBehaviour
         RandomDirectionGen();
         Count();
 
-        if (stunned) 
+        if (stunned)
         {
             if (state == State.Air)
             {
@@ -109,21 +109,25 @@ public class NPCMovement : MonoBehaviour
                 Friction();
             }
         }
-        else if (state == State.Air)
+        else 
         {
-            Turn();
-            Move();
-            Gravity();
-            AirDrag();
+            if (state == State.Air)
+            {
+                Turn();
+                Move();
+                Gravity();
+                AirDrag();
+            }
+            else if (state == State.Ground)
+            {
+                GroundSnap();
+                Turn();
+                Move();
+                Friction();
+                Jump();
+            }
         }
-        else if (state == State.Ground)
-        {
-            GroundSnap();
-            Turn();
-            Move();
-            Friction();
-            Jump();
-        }
+        
         ApplyForces();
     }
     /// <summary>

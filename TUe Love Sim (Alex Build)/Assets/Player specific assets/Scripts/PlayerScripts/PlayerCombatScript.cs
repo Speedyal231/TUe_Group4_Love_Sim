@@ -35,6 +35,9 @@ public class PlayerCombatScript : MonoBehaviour
     bool canPunch;
     bool punched;
 
+    [Header("Hitstun")]
+    [SerializeField] float hitStunTime;
+    float currentHitStuntTime;
 
     private enum CombatState
     {
@@ -75,7 +78,7 @@ public class PlayerCombatScript : MonoBehaviour
         Count();
         HitBoxSpawn(punchVal);
         Punch(punchVal);
-        Debug.Log(comboState);
+        Debug.Log(currentHitStuntTime);
     }
 
     /// <summary>
@@ -99,6 +102,8 @@ public class PlayerCombatScript : MonoBehaviour
             currentNextPunchTimer -= Time.fixedDeltaTime;
         if (currentFinisherCooldown > 0)
             currentFinisherCooldown -= Time.fixedDeltaTime;
+        if (currentHitStuntTime > 0)
+            currentHitStuntTime -= Time.fixedDeltaTime;
     }
 
     private void HitBoxSpawn(float punchVal)
@@ -229,7 +234,15 @@ public class PlayerCombatScript : MonoBehaviour
         }
     }
 
+    public void PlayerDamage() 
+    {
+        currentHitStuntTime = hitStunTime;
+    }
 
+    public bool Stunned() 
+    {
+        return currentHitStuntTime > 0 ? true : false ;
+    }
     
 
 }

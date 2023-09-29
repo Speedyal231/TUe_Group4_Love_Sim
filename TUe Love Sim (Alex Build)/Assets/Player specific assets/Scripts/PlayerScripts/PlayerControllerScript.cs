@@ -12,6 +12,7 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] Transform playerTransform;
     [SerializeField] Transform cameraTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
+    [SerializeField] PlayerCombatScript playerCombatScript;
     private PlayerInputActions playerInputActions;
 
     //Variables that contribute to the general character movement
@@ -26,6 +27,7 @@ public class PlayerControllerScript : MonoBehaviour
     RaycastHit wallPointHit;
     RaycastHit wallJumpPointHit;
     Vector3 prevWallNormal;
+    bool stunned;
 
     //Variables that contribute to and store object collisions and raycast data
     [Header("Ground Detection")]
@@ -96,10 +98,27 @@ public class PlayerControllerScript : MonoBehaviour
         GroundedCheck();
         StateSwitch();
         Count();
+        CheckStun();
         WallCheck(movingForce);
         WallJumpCheck(movingForce);
-        
-        if (statePlayer == State.Air) 
+        Debug.Log(stunned);
+
+        if (stunned) 
+        {
+            if (statePlayer == State.Air)
+            {
+                Turn();
+                Gravity();
+                AirDrag();
+            }
+            else if (statePlayer == State.Ground)
+            {
+                GroundSnap();
+                Turn();
+                Friction();
+            }
+        }
+        else if (statePlayer == State.Air)
         {
             Turn();
             Move(movingForce);
@@ -363,6 +382,11 @@ public class PlayerControllerScript : MonoBehaviour
     public float JumpHeightFetch()
     {
         return jumpHeight;
+    }
+
+    private void CheckStun() 
+    {
+        stunned = playerCombatScript.Stunned();
     }
 
 } 
