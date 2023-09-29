@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerCombatScript : MonoBehaviour
@@ -9,7 +11,9 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] Transform playerTransform;
     [SerializeField] Transform cameraTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
+    [SerializeField] Rigidbody RB;
     private PlayerInputActions playerInputActions;
+    [SerializeField] PlayerControllerScript playerControllerScript;
 
 
     [Header("Punch and Attack Values")]
@@ -17,23 +21,19 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] float punchHitBoxLength;
     [SerializeField] float punchKnockback;
     [SerializeField] float FinisherKnockback;
-    [SerializeField] float UppercutKnockback;
     [SerializeField] LayerMask enemyLayer;
     RaycastHit[] enemiesHit;
-    bool hitLanded;
 
     [Header("Punch and Attack Timings")]
     [SerializeField] float punchCooldown;
     [SerializeField] float finisherCooldown;
-    [SerializeField] float uppercutCooldown;
     [SerializeField] float nextPunchTimer;
-    [SerializeField] float uppercutTransitionTime;
+    [SerializeField] float hitDuration;
     float currentPunchCooldown;
     float currentFinisherCooldown;
-    float currentUppercutCooldown;
     float currentNextPunchTimer;
-    float currentUppercutTransitionTimer;
     bool canPunch;
+    bool punched;
 
 
     private enum CombatState
@@ -41,8 +41,7 @@ public class PlayerCombatScript : MonoBehaviour
         FirstPunch,
         SecondPunch,
         ThirdPunch,
-        Finisher,
-        AirPunch
+        Finisher
     }
     private CombatState comboState;
 
@@ -60,6 +59,7 @@ public class PlayerCombatScript : MonoBehaviour
         //enable player input script.
         playerInputActions = new PlayerInputActions();
         playerInputActions.Enable();
+        punched = false;
     }
 
     // Start is called before the first frame update
@@ -83,7 +83,7 @@ public class PlayerCombatScript : MonoBehaviour
     /// 
     /// Unity update and start to regualr function separator
     /// 
-    /// 
+    ///
     /// </summary>
 
     private float PunchInput()
@@ -109,98 +109,127 @@ public class PlayerCombatScript : MonoBehaviour
         }
     }
 
-    private void Punch(float punchVal) 
+    private void Punch(float punchVal)
     {
-        if (currentNextPunchTimer <= 0) 
+        if (currentNextPunchTimer <= 0)
         {
             comboState = CombatState.FirstPunch;
         }
-        if (comboState == CombatState.FirstPunch)
+        if (punched && punchVal > 0)
         {
-            if (currentPunchCooldown <= 0 && currentFinisherCooldown <= 0)
-            {
-                canPunch = true;
-            }
-            else
-            {
-                canPunch = false;
-            }
+            canPunch = false;
         }
-        else if (comboState == CombatState.SecondPunch)
+        else if ((punched && punchVal <= 0) || !punched)
         {
-            if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
-            {
-                canPunch = true;
-            }
-            else
-            {
-                canPunch = false;
-            }
-        }
-        else if (comboState == CombatState.ThirdPunch)
-        {
-            if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
-            {
-                canPunch = true;
-            }
-            else
-            {
-                canPunch = false;
-            }
-        }
-        else if (comboState == CombatState.Finisher)
-        {
-            if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
-            {
-                canPunch = true;
-            }
-            else
-            {
-                canPunch = false;
-            }
-        }
+            punched = false;
 
-        if (punchVal > 0) 
-        {
-            if (canPunch) 
+            if (comboState == CombatState.FirstPunch)
             {
-                foreach (RaycastHit enemy in enemiesHit)
+                if (currentPunchCooldown <= 0 && currentFinisherCooldown <= 0)
                 {
-                    if (enemy.collider.TryGetComponent(out NPCCombatScript npcCombatScript))
-                    {
-                        if (comboState == CombatState.FirstPunch || comboState == CombatState.SecondPunch || comboState == CombatState.ThirdPunch)
-                        {
-                            npcCombatScript.Damaged();
-                            enemy.rigidbody.velocity += enemy.transform.up.normalized * punchKnockback / 4 + Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * punchKnockback;
-                            currentPunchCooldown = punchCooldown;
-                            currentNextPunchTimer = nextPunchTimer;
-                            if (comboState == CombatState.FirstPunch) 
-                            {
-                                comboState = CombatState.SecondPunch;
-                            }
-                            else if (comboState == CombatState.SecondPunch)
-                            {
-                                comboState = CombatState.ThirdPunch;
-                            }
-                            else if (comboState == CombatState.ThirdPunch)
-                            {
-                                comboState = CombatState.Finisher;
-                            }
-                        }
-                        else if (comboState == CombatState.Finisher)
-                        {
-                            enemy.rigidbody.velocity += enemy.transform.up.normalized * FinisherKnockback / 4 + Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * FinisherKnockback;
-                            currentFinisherCooldown = finisherCooldown;
-                            currentNextPunchTimer = nextPunchTimer;
-                            npcCombatScript.Damaged();
-                            comboState = CombatState.FirstPunch;
-                        }
-                    }
+                    canPunch = true;
+                }
+                else
+                {
+                    canPunch = false;
+                }
+            }
+            else if (comboState == CombatState.SecondPunch)
+            {
+                if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
+                {
+                    canPunch = true;
+                }
+                else
+                {
+                    canPunch = false;
+                }
+            }
+            else if (comboState == CombatState.ThirdPunch)
+            {
+                if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
+                {
+                    canPunch = true;
+                }
+                else
+                {
+                    canPunch = false;
+                }
+            }
+            else if (comboState == CombatState.Finisher)
+            {
+                if (currentPunchCooldown <= 0 && currentNextPunchTimer > 0)
+                {
+                    canPunch = true;
+                }
+                else
+                {
+                    canPunch = false;
                 }
             }
         }
+        
+        
+        if (punchVal > 0 && !punched)
+        {
+            if ((canPunch) )
+            {
+                if (enemiesHit.Count() > 0)
+                {
+                    foreach (RaycastHit enemy in enemiesHit)
+                    {
+                        if (enemy.collider.TryGetComponent(out NPCCombatScript npcCombatScript))
+                        {
+                            // add charcter velocity to knock back dog.
+                            if (comboState == CombatState.FirstPunch || comboState == CombatState.SecondPunch || comboState == CombatState.ThirdPunch)
+                            {
+                                npcCombatScript.Punched();
+                                enemy.rigidbody.velocity += enemy.transform.up.normalized * punchKnockback / 4 + Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * punchKnockback;
+                                currentPunchCooldown = punchCooldown;
+                                currentNextPunchTimer = nextPunchTimer;
+                                punched = true;
+                                
+
+                            }
+                            else if (comboState == CombatState.Finisher)
+                            {
+                                enemy.rigidbody.velocity += enemy.transform.up.normalized * FinisherKnockback / 4 + Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * FinisherKnockback;
+                                currentFinisherCooldown = finisherCooldown;
+                                currentNextPunchTimer = nextPunchTimer;
+                                npcCombatScript.Finished();
+                                punched = true;
+                                
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    punched = true;
+                }
+                
+                if (comboState == CombatState.FirstPunch)
+                {
+                    comboState = CombatState.SecondPunch;
+                }
+                else if (comboState == CombatState.SecondPunch)
+                {
+                    comboState = CombatState.ThirdPunch;
+                }
+                else if (comboState == CombatState.ThirdPunch)
+                {
+                    comboState = CombatState.Finisher;
+                }
+                else if (comboState == CombatState.Finisher)
+                {
+                    comboState = CombatState.FirstPunch;
+                }
+
+            }
+        }
+    }
+
+
     
 
-
-    }
 }

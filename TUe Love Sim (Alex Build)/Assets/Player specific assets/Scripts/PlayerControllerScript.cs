@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerControllerScript : MonoBehaviour
@@ -55,12 +56,12 @@ public class PlayerControllerScript : MonoBehaviour
 
 
     // enumeration of states used to denote several states.
-    private enum State
+    public enum State
     {
         Ground,
         Air
     }
-    private State state;
+    public State statePlayer;
 
 
 /// <summary>
@@ -98,7 +99,7 @@ public class PlayerControllerScript : MonoBehaviour
         WallCheck(movingForce);
         WallJumpCheck(movingForce);
         
-        if (state == State.Air) 
+        if (statePlayer == State.Air) 
         {
             Turn();
             Move(movingForce);
@@ -108,7 +109,7 @@ public class PlayerControllerScript : MonoBehaviour
             NewJump();
             DYNAWallCling();
         }
-        else if (state == State.Ground)
+        else if (statePlayer == State.Ground)
         {
             GroundSnap();
             Turn();
@@ -162,7 +163,7 @@ public class PlayerControllerScript : MonoBehaviour
     private void PhysicsCalcInit() 
     {
         velocity = Vector3.zero;
-        if (state == State.Ground)
+        if (statePlayer == State.Ground)
         {
             prevWallNormal = Vector3.up;
             hasWallJumped = false;
@@ -232,11 +233,11 @@ public class PlayerControllerScript : MonoBehaviour
     private void NewJump() 
     {
         float jumpVal = JumpInput();
-        if (state == State.Ground)
+        if (statePlayer == State.Ground)
         {
             velocity += playerTransform.up.normalized * jumpHeight * jumpVal;
         }
-        else if (state == State.Air)
+        else if (statePlayer == State.Air)
         {
             if (canWallJump && jumpVal > 0 && !hasWallJumped && canCling) 
             {
@@ -293,11 +294,11 @@ public class PlayerControllerScript : MonoBehaviour
     {
         if (grounded)
         {
-            state = State.Ground;
+            statePlayer = State.Ground;
         }
         else 
         {
-            state = State.Air;
+            statePlayer = State.Air;
         }
     }
 
@@ -353,5 +354,15 @@ public class PlayerControllerScript : MonoBehaviour
             velocity += Vector3.ProjectOnPlane(wallPointHit.normal,Vector3.up).normalized * movingForce.magnitude;
         }
     }
-    
+
+    public bool AirFetch() 
+    {
+        return statePlayer == State.Air ? true : false ;
+    }
+
+    public float JumpHeightFetch()
+    {
+        return jumpHeight;
+    }
+
 } 
