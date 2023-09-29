@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 107115771}
   - component: {fileID: 107115770}
   - component: {fileID: 107115772}
+  - component: {fileID: 107115773}
   m_Layer: 7
   m_Name: NPC
   m_TagString: Untagged
@@ -268,7 +269,7 @@ MonoBehaviour:
   gravity: 0.5
   jumpHeight: 12
   airDrag: 1.5
-  airMaxSpeed: 21
+  airMaxSpeed: 17
   groundMaxSpeedInRange: 20
   airMaxSpeedInRange: 21
   comabtRadius: 60
@@ -276,6 +277,20 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
+--- !u!114 &107115773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107115766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e560a66e64895794d99e334e725db8bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHealth: 0
+  punchDamage: 0
 --- !u!1 &271777381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2164,6 +2179,7 @@ GameObject:
   - component: {fileID: 1436331727}
   - component: {fileID: 1436331726}
   - component: {fileID: 1436331729}
+  - component: {fileID: 1436331730}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -2335,6 +2351,21 @@ MonoBehaviour:
   nextPunchTimer: 1.5
   hitDuration: 0.5
   hitStunTime: 0.3
+--- !u!114 &1436331730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436331722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4040de92672079d41837b4e7fcf859e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHealth: 0
+  punchDamage: 0
+  finisherDamage: 0
 --- !u!1 &1514949039
 GameObject:
   m_ObjectHideFlags: 0
