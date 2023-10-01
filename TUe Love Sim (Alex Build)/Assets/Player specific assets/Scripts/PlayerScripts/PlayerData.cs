@@ -11,6 +11,7 @@ public class PlayerData : MonoBehaviour
     private float health;
     private float combo;
     private float targetRizzedCount;
+    private bool dead;
     RizzStatus rizzStatus;
     public enum RizzStatus 
     {
@@ -28,6 +29,16 @@ public class PlayerData : MonoBehaviour
         combo = 0;
         targetRizzedCount = 0;
         rizzStatus = RizzStatus.MegaMinger;
+    }
+
+    private void FixedUpdate()
+    {
+        UpdateDead();
+        Debug.Log(health);
+        //Debug.Log(combo);
+        //Debug.Log(targetRizzedCount);
+        //Debug.Log(rizzStatus);
+
     }
 
 
@@ -66,6 +77,11 @@ public class PlayerData : MonoBehaviour
         return rizzStatus;
     }
 
+    public bool FetchDead() 
+    {
+        return dead;
+    }
+
     /// <summary>
     /// 
     /// updating functions
@@ -87,5 +103,16 @@ public class PlayerData : MonoBehaviour
         targetRizzedCount += change;
     }
 
+    private void UpdateDead() 
+    {
+        if (health <= 0) 
+        {
+            dead = true;
+        }    
+        else
+        {
+            dead = false;
+        }
+    }
 
 }

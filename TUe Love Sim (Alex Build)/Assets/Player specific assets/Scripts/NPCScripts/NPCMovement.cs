@@ -94,7 +94,7 @@ public class NPCMovement : MonoBehaviour
         RandomDirectionGen();
         Count();
 
-        if (stunned)
+        if (stunned || NPCCombat.FetchDead())
         {
             if (state == State.Air)
             {

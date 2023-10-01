@@ -11,10 +11,16 @@ public class NPCData : MonoBehaviour
 
 
     private float health;
+    private bool dead;
 
     private void Start()
     {
         health = startHealth;
+    }
+
+    private void Update()
+    {
+        UpdateDead();
     }
 
     /// <summary>
@@ -32,6 +38,11 @@ public class NPCData : MonoBehaviour
         return punchDamage;
     }
 
+    public bool FetchDead()
+    {
+        return dead;
+    }
+
     /// <summary>
     /// 
     /// updating functions
@@ -43,4 +54,15 @@ public class NPCData : MonoBehaviour
         health += change;
     }
 
+    private void UpdateDead()
+    {
+        if (health <= 0)
+        {
+            dead = true;
+        }
+        else
+        {
+            dead = false;
+        }
+    }
 }

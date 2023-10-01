@@ -101,9 +101,8 @@ public class PlayerControllerScript : MonoBehaviour
         CheckStun();
         WallCheck(movingForce);
         WallJumpCheck(movingForce);
-        Debug.Log(stunned);
 
-        if (stunned) 
+        if (stunned || playerCombatScript.FetchDead()) 
         {
             if (statePlayer == State.Air)
             {

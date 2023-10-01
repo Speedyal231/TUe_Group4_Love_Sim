@@ -10,6 +10,8 @@ public class NPCCombatScript : MonoBehaviour
     [SerializeField] Transform playerTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] LayerMask playerLayer;
+    [SerializeField] NPCData characterData;
+    [SerializeField] PlayerData playerData;
 
     [Header("Stun and damadge effects")]
     [SerializeField] float punchStunTime;
@@ -40,10 +42,16 @@ public class NPCCombatScript : MonoBehaviour
 
     private void Update()
     {
-        Count();
-        CanHit();
-        Punch();
+        if (characterData.FetchDead())
+        {
 
+        }
+        else 
+        {
+            Count();
+            CanHit();
+            Punch();
+        }
     }
 
     /// <summary>
@@ -69,13 +77,29 @@ public class NPCCombatScript : MonoBehaviour
 
     public void Punched()
     {
-
         currentPunchStunTime = punchStunTime;
+        if (characterData.FetchHealth() <= playerData.PunchDamage())
+        {
+            characterData.ChangeHealth(-characterData.FetchHealth());
+        }
+        else 
+        {
+            characterData.ChangeHealth(-playerData.PunchDamage());
+        }
     }
 
     public void Finished()
     {
         currentFinisherStunTime = finisherStunTime;
+        currentPunchStunTime = punchStunTime;
+        if (characterData.FetchHealth() <= playerData.FinisherDamage())
+        {
+            characterData.ChangeHealth(-characterData.FetchHealth());
+        }
+        else
+        {
+            characterData.ChangeHealth(-playerData.FinisherDamage());
+        }
     }
 
     public bool StunCheck() 
@@ -106,6 +130,7 @@ public class NPCCombatScript : MonoBehaviour
             if (hit.collider.TryGetComponent(out PlayerCombatScript playerCombatScript)) 
             {
                 playerCombatScript.PlayerDamage();
+                currentPunchCooldown = punchCooldown;
                 playerRB.velocity += characterTransform.forward.normalized * knockback + playerTransform.up.normalized * knockback / 4; 
             }
         }
@@ -115,5 +140,10 @@ public class NPCCombatScript : MonoBehaviour
     private void CanHit()
     {
         inRange = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * characterTransform.forward.normalized), capsuleCollider.radius, characterTransform.forward, out hit, hitRange + sphereRayOffset, playerLayer);
+    }
+
+    public bool FetchDead()
+    {
+        return characterData.FetchDead();
     }
 }

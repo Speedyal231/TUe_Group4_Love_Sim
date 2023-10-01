@@ -12,10 +12,11 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] Transform cameraTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] Rigidbody RB;
-    private PlayerInputActions playerInputActions;
     [SerializeField] PlayerControllerScript playerControllerScript;
-
-
+    [SerializeField] NPCData enemyData;
+    [SerializeField] PlayerData playerData;
+    private PlayerInputActions playerInputActions;
+    
     [Header("Punch and Attack Values")]
     [SerializeField] float punchHitBoxRadius;
     [SerializeField] float punchHitBoxLength;
@@ -74,11 +75,13 @@ public class PlayerCombatScript : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        float punchVal = PunchInput();
-        Count();
-        HitBoxSpawn(punchVal);
-        Punch(punchVal);
-        Debug.Log(currentHitStuntTime);
+        if (!playerData.FetchDead()) 
+        {
+            float punchVal = PunchInput();
+            Count();
+            HitBoxSpawn(punchVal);
+            Punch(punchVal);
+        }
     }
 
     /// <summary>
@@ -237,6 +240,19 @@ public class PlayerCombatScript : MonoBehaviour
     public void PlayerDamage() 
     {
         currentHitStuntTime = hitStunTime;
+        if (playerData.FetchHealth() <= enemyData.PunchDamage())
+        {
+            playerData.ChangeHealth(-playerData.FetchHealth());
+        }
+        else
+        {
+            playerData.ChangeHealth(-enemyData.PunchDamage());
+        }
+    }
+
+    public bool FetchDead() 
+    { 
+        return playerData.FetchDead();
     }
 
     public bool Stunned() 
