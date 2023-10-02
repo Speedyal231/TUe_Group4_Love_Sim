@@ -26,6 +26,7 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] float floorTurnRange;
     [SerializeField] float randyTime;
     [SerializeField] float turnAngle;
+    [SerializeField] float peripheralAngle;
     Vector3 randomVector;
     float randomSpeed;
     float currentRandyTime;
@@ -50,11 +51,13 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] float groundMaxSpeedInRange;
     [SerializeField] float airMaxSpeedInRange;
     [SerializeField] float comabtRadius;
+    [SerializeField] float seenRange;
     [SerializeField] float sphereRayOffset;
     [SerializeField] LayerMask playerLayer;
     RaycastHit wallRangeRay;
     RaycastHit pointWallTouchData;
     bool playerInRange;
+    bool seen;
     bool stunned;
     bool walled;
     bool floored;
@@ -91,7 +94,6 @@ public class NPCMovement : MonoBehaviour
         StateSwitch();
         CombatRangeCheck();
         HitStunCheck();
-        //JumpCheck();
         WallCheck();
         FloorCheck();
         WallUnstick();
@@ -165,24 +167,28 @@ public class NPCMovement : MonoBehaviour
 
     private void Turn() 
     {
+        Vector3 NPCMoveDir;
         Vector3 NPCDirection;
         if (playerInRange) 
         {
             NPCDirection = playerTransform.position - characterTransform.position;
+            NPCDirection = new Vector3(NPCDirection.x, 0, NPCDirection.z);
+            NPCMoveDir = Vector3.Slerp(characterTransform.forward, NPCDirection, turnSpeed);
         }
         else if (shouldTurn || !floored) 
         {
-             NPCDirection =  Quaternion.AngleAxis(turnAngle, characterTransform.up) * characterTransform.forward;
+            NPCDirection =  Quaternion.AngleAxis(turnAngle, characterTransform.up) * characterTransform.forward;
             randomVector = NPCDirection;
+            NPCDirection = new Vector3(NPCDirection.x, 0, NPCDirection.z);
+            NPCMoveDir = Vector3.Slerp(characterTransform.forward, NPCDirection, turnSpeed);
         }
         else
         {
             NPCDirection = Vector3.ProjectOnPlane(randomVector,characterTransform.up);
+            NPCDirection = new Vector3(NPCDirection.x, 0, NPCDirection.z);
+            NPCMoveDir = Vector3.Slerp(characterTransform.forward, NPCDirection, turnSpeed);
         }
 
-
-        NPCDirection = new Vector3(NPCDirection.x, 0, NPCDirection.z);
-        Vector3 NPCMoveDir = Vector3.Slerp(characterTransform.forward, NPCDirection,turnSpeed);
         Quaternion rotate = Quaternion.LookRotation(NPCMoveDir, characterTransform.up);
         characterTransform.rotation = rotate;
     }
@@ -301,20 +307,31 @@ public class NPCMovement : MonoBehaviour
 
     private void CombatRangeCheck()
     {
-        playerInRange = comabtRadius > (playerTransform.position - characterTransform.position).magnitude;
+        Vector3 posDif = playerTransform.position - characterTransform.position;
+        float angleDif = Vector3.Angle(posDif, characterTransform.forward);
+        bool obscured = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height * 3/4)), posDif, posDif.magnitude, groundLayer);
+        if ((seenRange > (posDif).magnitude && angleDif <= peripheralAngle && !obscured && posDif.y > -2))
+        {
+            playerInRange = true;
+            seen = true;
+        }
+        else if ((comabtRadius > (posDif).magnitude && seen)) 
+        {
+            playerInRange = true;
+        }
+        else
+        {
+            playerInRange = false;
+            seen = false;
+        }
+        Debug.Log(playerInRange);
+        Debug.Log(angleDif);
     }
 
     private void WallCheck()
     {
         Vector3 NPCDirection = playerTransform.position - characterTransform.position;
         walled = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallTouchThreshold + sphereRayOffset, groundLayer);
-
-    }
-
-    private void JumpCheck()
-    {
-        Vector3 NPCDirection = playerTransform.position - characterTransform.position;
-        canJump = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallJumpThreshold + sphereRayOffset, groundLayer);
 
     }
 
@@ -325,7 +342,7 @@ public class NPCMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (this.state == State.Ground && walled && playerInRange)
+        if (this.state == State.Ground && (walled || !floored) && playerInRange)
         {
             velocity += characterTransform.up.normalized * jumpHeight;
         }
@@ -355,7 +372,7 @@ public class NPCMovement : MonoBehaviour
         if (currentRandyTime <= 0)
         {
             randomVector = new Vector3(Random.Range(-5f, 5f), 0 , Random.Range(-5f, 5f));
-            randomSpeed = Random.Range(0, 10);
+            randomSpeed = Random.Range(0, docileMaxSpeed + 2);
             currentRandyTime = randyTime;
         }
     }
