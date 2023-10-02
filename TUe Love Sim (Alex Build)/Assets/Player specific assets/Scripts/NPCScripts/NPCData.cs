@@ -18,7 +18,7 @@ public class NPCData : MonoBehaviour
         health = startHealth;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         UpdateDead();
     }

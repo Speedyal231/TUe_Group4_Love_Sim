@@ -40,7 +40,7 @@ public class NPCCombatScript : MonoBehaviour
 
     // Start is called before the first frame update
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (characterData.FetchDead())
         {

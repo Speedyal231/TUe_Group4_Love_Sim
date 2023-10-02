@@ -22,9 +22,12 @@ public class NPCMovement : MonoBehaviour
     [SerializeField, Range(0,1)] float turnSpeed;
     [SerializeField] float wallTouchThreshold;
     [SerializeField] float wallJumpThreshold;
-    [SerializeField] float turnRange;
+    [SerializeField] float wallTurnRange;
+    [SerializeField] float floorTurnRange;
     [SerializeField] float randyTime;
+    [SerializeField] float turnAngle;
     Vector3 randomVector;
+    float randomSpeed;
     float currentRandyTime;
     bool shouldTurn;
     Vector3 velocity;
@@ -54,6 +57,7 @@ public class NPCMovement : MonoBehaviour
     bool playerInRange;
     bool stunned;
     bool walled;
+    bool floored;
     bool canJump;
 
     private enum State
@@ -80,15 +84,16 @@ public class NPCMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update()
+    private void FixedUpdate()
     {
         PhysicsCalcInit();
         GroundedCheck();
         StateSwitch();
         CombatRangeCheck();
         HitStunCheck();
-        JumpCheck();
+        //JumpCheck();
         WallCheck();
+        FloorCheck();
         WallUnstick();
         MoveCheck();
         RandomDirectionGen();
@@ -165,9 +170,10 @@ public class NPCMovement : MonoBehaviour
         {
             NPCDirection = playerTransform.position - characterTransform.position;
         }
-        else if (shouldTurn) 
+        else if (shouldTurn || !floored) 
         {
-             NPCDirection = Quaternion.AngleAxis(20, characterTransform.up) * characterTransform.forward;
+             NPCDirection =  Quaternion.AngleAxis(turnAngle, characterTransform.up) * characterTransform.forward;
+            randomVector = NPCDirection;
         }
         else
         {
@@ -183,14 +189,20 @@ public class NPCMovement : MonoBehaviour
 
     private void Move()
     {
-        
-        velocity += characterTransform.forward.normalized * acceleration;
-         
+        if ((randomSpeed > docileMaxSpeed) && !playerInRange)
+        {
+            velocity += -velocity;
+        }
+        else 
+        {
+            velocity += characterTransform.forward.normalized * acceleration;
+        }
     }
 
     private void Friction()
     {
         float maxSpeed = playerInRange ? groundMaxSpeed : docileMaxSpeed;
+
 
         if (RB.velocity.magnitude != 0f)
         {
@@ -295,14 +307,14 @@ public class NPCMovement : MonoBehaviour
     private void WallCheck()
     {
         Vector3 NPCDirection = playerTransform.position - characterTransform.position;
-        walled = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, NPCDirection, out pointWallTouchData, wallTouchThreshold + sphereRayOffset, groundLayer);
+        walled = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallTouchThreshold + sphereRayOffset, groundLayer);
 
     }
 
     private void JumpCheck()
     {
         Vector3 NPCDirection = playerTransform.position - characterTransform.position;
-        canJump = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, NPCDirection, out pointWallTouchData, wallJumpThreshold + sphereRayOffset, groundLayer);
+        canJump = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallJumpThreshold + sphereRayOffset, groundLayer);
 
     }
 
@@ -313,7 +325,7 @@ public class NPCMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (this.state == State.Ground && walled)
+        if (this.state == State.Ground && walled && playerInRange)
         {
             velocity += characterTransform.up.normalized * jumpHeight;
         }
@@ -328,14 +340,22 @@ public class NPCMovement : MonoBehaviour
 
     private void MoveCheck()
     {
-        shouldTurn = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height/2), characterTransform.forward, out wallRangeRay, turnRange, groundLayer);
+        shouldTurn = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height/2), characterTransform.forward, out wallRangeRay, wallTurnRange, groundLayer);
+        //Debug.Log(shouldTurn);
+    }
+
+    private void FloorCheck()
+    {
+        floored = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height), characterTransform.forward - characterTransform.up *1/2, floorTurnRange, groundLayer);
+        //Debug.Log(floored);
     }
 
     private void RandomDirectionGen() 
     {
         if (currentRandyTime <= 0)
         {
-            randomVector = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
+            randomVector = new Vector3(Random.Range(-5f, 5f), 0 , Random.Range(-5f, 5f));
+            randomSpeed = Random.Range(0, 10);
             currentRandyTime = randyTime;
         }
     }

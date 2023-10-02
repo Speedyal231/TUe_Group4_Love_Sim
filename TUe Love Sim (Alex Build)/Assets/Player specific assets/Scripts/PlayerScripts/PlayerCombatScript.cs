@@ -192,7 +192,7 @@ public class PlayerCombatScript : MonoBehaviour
                             if (comboState == CombatState.FirstPunch || comboState == CombatState.SecondPunch || comboState == CombatState.ThirdPunch)
                             {
                                 npcCombatScript.Punched();
-                                enemy.rigidbody.velocity += enemy.transform.up.normalized * punchKnockback / 4 + Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * punchKnockback;
+                                enemy.rigidbody.velocity += Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized * punchKnockback;
                                 currentPunchCooldown = punchCooldown;
                                 currentNextPunchTimer = nextPunchTimer;
                                 punched = true;
