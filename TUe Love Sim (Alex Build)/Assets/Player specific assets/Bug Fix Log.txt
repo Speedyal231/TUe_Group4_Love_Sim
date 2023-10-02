@@ -1,0 +1,3 @@
+Please change all caharcter movement scripts to fixed update
+Npc is not on fixed update!!!!!!!
+Also tweak values to help that shoit
