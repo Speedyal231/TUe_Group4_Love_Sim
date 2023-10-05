@@ -3082,6 +3082,11 @@ PrefabInstance:
       objectReference: {fileID: 1436331730}
     - target: {fileID: 1577003193041613988, guid: 7ce24ac2e905d3c40b1c3a8fcaaf38d1,
         type: 3}
+      propertyPath: punchCooldown
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1577003193041613988, guid: 7ce24ac2e905d3c40b1c3a8fcaaf38d1,
+        type: 3}
       propertyPath: playerTransform
       value: 
       objectReference: {fileID: 1436331723}
