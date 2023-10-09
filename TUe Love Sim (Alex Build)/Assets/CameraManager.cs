@@ -24,9 +24,10 @@ public class CameraManager : MonoBehaviour
         }
         instance = this;
 
-        Camera.main.enabled = true;
-        playerCamController = Camera.main.GetComponent<CameraMovement>();
+        playerCam.enabled = true;
+        dialogueCam.enabled = false;
 
+        playerCamController = Camera.main.GetComponent<CameraMovement>();
         if(playerCamController == null)
         {
             Debug.Log("CameraManager tried to fetch the CameraMovement script component of the main camera, but failed.");
@@ -34,11 +35,16 @@ public class CameraManager : MonoBehaviour
 
     }
 
-    public void SwitchFromMainCamera(Camera camera)
+    public void SwitchToCamera(Camera camera)
     {
-        Camera.main.enabled = false;
-        Camera.main.gameObject.SetActive(false);
+        Camera.current.enabled = false;
         camera.enabled = true;
+
+    }
+    public void SwitchToDialogueCamera()
+    {
+        playerCam.enabled = false;
+        dialogueCam.enabled = true;
 
     }
     public void DisablePlayerCameraMovement()
@@ -52,9 +58,8 @@ public class CameraManager : MonoBehaviour
     }
     public void ReturnToMainCamera()
     {
-        Camera.current.enabled = false;
-        Camera.main.enabled = true;
-        Camera.main.gameObject.SetActive(true);
+        dialogueCam.enabled = false;
+        playerCam.enabled = true;
     }
 
     // Update is called once per frame

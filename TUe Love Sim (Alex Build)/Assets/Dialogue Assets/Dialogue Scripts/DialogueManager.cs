@@ -68,8 +68,9 @@ public class DialogueManager : MonoBehaviour
         dialogueIsPlaying = true;
         dialoguePanel.SetActive(true);  
         ContinueStory();
-        playerController.gameObject.SetActive(false);
+        playerController.enabled = false;
         CameraManager.instance.DisablePlayerCameraMovement();
+        CameraManager.instance.SwitchToDialogueCamera();
 
 
     }
@@ -79,8 +80,9 @@ public class DialogueManager : MonoBehaviour
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
         dialogueText.text = "";
-        playerController.gameObject.SetActive(true);
+        playerController.enabled = true;
         CameraManager.instance.EnablePlayerCameraMovement();
+        CameraManager.instance.ReturnToMainCamera();
         
     }
 
@@ -138,13 +140,20 @@ public class DialogueManager : MonoBehaviour
             choices[i].SetActive(false);
         }
 
+        // Unity's Event System requires us to select the first choice | we clear it first and then set it in the next frame
         StartCoroutine(SelectFirstChoice());
     }
-    // Unity's Event System requires us to select the first choice | we clear it first and then set it in the next frame
+    
     private IEnumerator SelectFirstChoice()
     {
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();
         EventSystem.current.SetSelectedGameObject(choices[0].gameObject);
+    }
+
+    public void MakeChoice(int choiceIndex)
+    {
+        currentStory.ChooseChoiceIndex(choiceIndex);
+        ContinueStory();
     }
 }
