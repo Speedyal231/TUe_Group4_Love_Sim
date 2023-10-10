@@ -68,7 +68,7 @@ Transform:
   - {fileID: 102378367156929149}
   - {fileID: 8919695090476137988}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1572025563550473129
 CapsuleCollider:
@@ -179,9 +179,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   gravity: 1.25
-  jumpHeight: 15
-  wallJumpMultiplier: 2
-  wallBounceMultiplier: 2.5
+  jumpHeight: 25
+  wallJumpMultiplier: 1.4
+  wallBounceMultiplier: 1.6
   wallJumpThreshold: 0.4
   wallClingTimer: 1.5
   wallSpeedThreshHold: 5
