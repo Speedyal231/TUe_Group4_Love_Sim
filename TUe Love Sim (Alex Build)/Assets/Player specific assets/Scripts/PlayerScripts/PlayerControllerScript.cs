@@ -13,6 +13,7 @@ public class PlayerControllerScript : MonoBehaviour
     [SerializeField] Transform cameraTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] PlayerCombatScript playerCombatScript;
+    [SerializeField] PlayerAnimationBehaviour playerAnimationBehaviour;
     private PlayerInputActions playerInputActions;
 
     //Variables that contribute to the general character movement
@@ -67,19 +68,19 @@ public class PlayerControllerScript : MonoBehaviour
     public State statePlayer;
 
 
-/// <summary>
-///
-/// 
-/// 
-/// Spacing between variable declarations and funtion declaration.
-/// 
-/// 
-/// 
-/// </summary>
+    /// <summary>
+    ///
+    /// 
+    /// 
+    /// Spacing between variable declarations and funtion declaration.
+    /// 
+    /// 
+    /// 
+    /// </summary>
 
 
 
-    private void Awake() 
+    private void Awake()
     {
         //enable player input script.
         playerInputActions = new PlayerInputActions();
@@ -95,6 +96,7 @@ public class PlayerControllerScript : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 movingForce = GetMovementVectorNormalized();
+        CheckAnim(movingForce);
         PhysicsCalcInit();
         GroundedCheck();
         StateSwitch();
@@ -103,7 +105,7 @@ public class PlayerControllerScript : MonoBehaviour
         WallCheck(movingForce);
         WallJumpCheck(movingForce);
 
-        if (stunned || playerCombatScript.FetchDead()) 
+        if (stunned || playerCombatScript.FetchDead())
         {
             if (statePlayer == State.Air)
             {
@@ -142,19 +144,19 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
 
-/// <summary>
-///
-/// 
-/// 
-/// Spacing between main and general funtion declaration.
-/// 
-/// 
-/// 
-/// </summary>
+    /// <summary>
+    ///
+    /// 
+    /// 
+    /// Spacing between main and general funtion declaration.
+    /// 
+    /// 
+    /// 
+    /// </summary>
 
     //stores the  move input direction as a Vector2
     // consider implement input collection at start of update to sfae precessing times
-    private Vector3 GetMovementVectorNormalized() 
+    private Vector3 GetMovementVectorNormalized()
     {
         //getting the input
         Vector2 inputVector = playerInputActions.Keyboard.Move.ReadValue<Vector2>();
@@ -163,23 +165,23 @@ public class PlayerControllerScript : MonoBehaviour
         Vector3 rightForce = inputVector.x * playerTransform.right.normalized;
 
         Vector3 movingForce = (frontalForce + rightForce) * acceleration;
-    
+
         return movingForce;
     }
 
     //stores the jump input as a float
-    private float JumpInput() 
+    private float JumpInput()
     {
         return playerInputActions.Keyboard.Jump.ReadValue<float>();
     }
-    
-    private float ShiftInput() 
+
+    private float ShiftInput()
     {
         return playerInputActions.Keyboard.Cling.ReadValue<float>();
     }
 
     //set physics to initial state before being calculated each physics cycle
-    private void PhysicsCalcInit() 
+    private void PhysicsCalcInit()
     {
         velocity = Vector3.zero;
         if (statePlayer == State.Ground)
@@ -190,66 +192,66 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     //applies the calculated velocity of the current cycle to the Player
-    private void ApplyForces() 
+    private void ApplyForces()
     {
         RB.velocity += velocity;
     }
 
     void Count()
     {
-        if(currentWallClingTimer > 0)
+        if (currentWallClingTimer > 0)
             currentWallClingTimer -= Time.fixedDeltaTime;
     }
 
     //function to keep player facing same direction as camera
-    private void Turn() 
+    private void Turn()
     {
         Vector3 cameraFlatForward = Vector3.ProjectOnPlane(cameraTransform.forward, playerTransform.up).normalized;
         playerTransform.forward = cameraFlatForward;
     }
 
     // funtion to apply movement forces to velocity
-    private void Move(Vector3 movingForce) 
+    private void Move(Vector3 movingForce)
     {
         velocity += movingForce;
     }
 
     // funtion to apply friction to motion of player on ground (note: must be adapted to only work in xz plane)
-    private void Friction() 
+    private void Friction()
     {
-        if (RB.velocity.magnitude != 0f) 
+        if (RB.velocity.magnitude != 0f)
         {
-            if (RB.velocity.magnitude >= groundMaxSpeed) 
+            if (RB.velocity.magnitude >= groundMaxSpeed)
             {
                 velocity -= RB.velocity.normalized * acceleration;
-            } 
-            else 
+            }
+            else
             {
-                
-                if (RB.velocity.magnitude <  accelerationFriction) 
+
+                if (RB.velocity.magnitude < accelerationFriction)
                 {
                     velocity -= RB.velocity;
-                } 
-                else 
+                }
+                else
                 {
                     velocity -= RB.velocity.normalized * accelerationFriction;
                 }
-        
+
             }
-        } 
+        }
     }
 
-    private void GroundedCheck() 
+    private void GroundedCheck()
     {
         grounded = Physics.Raycast(playerTransform.position + (playerTransform.up.normalized * rayOriginOffset), -playerTransform.up, out groundedRayPoint, groundHitRange + rayOriginOffset, groundLayer);
     }
 
-    private void Gravity() 
+    private void Gravity()
     {
         velocity += Vector3.down.normalized * gravity;
     }
 
-    private void NewJump() 
+    private void NewJump()
     {
         if (statePlayer == State.Ground)
         {
@@ -262,16 +264,16 @@ public class PlayerControllerScript : MonoBehaviour
         }
         else if (statePlayer == State.Air)
         {
-            if (canWallJump && jumpVal > 0 && !hasWallJumped && canCling) 
+            if (canWallJump && jumpVal > 0 && !hasWallJumped && canCling)
             {
                 hasWallJumped = true;
                 velocity.y -= (-RB.velocity.y > gravity) ? RB.velocity.y : 0;
-                velocity += playerTransform.up.normalized * jumpHeight * wallJumpMultiplier *jumpVal + Vector3.ProjectOnPlane(wallJumpPointHit.normal, transform.up).normalized * wallBounceMultiplier * jumpHeight;
+                velocity += playerTransform.up.normalized * jumpHeight * wallJumpMultiplier * jumpVal + Vector3.ProjectOnPlane(wallJumpPointHit.normal, transform.up).normalized * wallBounceMultiplier * jumpHeight;
             }
-        } 
+        }
     }
 
-    private void DYNAWallCling() 
+    private void DYNAWallCling()
     {
         float clingVal = ShiftInput();
         if (canWallJump)
@@ -283,16 +285,16 @@ public class PlayerControllerScript : MonoBehaviour
                 prevWallNormal = wallJumpPointHit.normal.normalized;
                 prevObjectWall = wallJumpPointHit.collider;
                 hasWallJumped = false;
-                
+
             }
-            else if (clingVal > 0 && (ExtensionMethods.Round(prevWallNormal.normalized) - ExtensionMethods.Round(wallJumpPointHit.normal.normalized) == Vector3.zero)) 
+            else if (clingVal > 0 && (ExtensionMethods.Round(prevWallNormal.normalized) - ExtensionMethods.Round(wallJumpPointHit.normal.normalized) == Vector3.zero))
             {
-                if (currentWallClingTimer > 0 && !hasWallJumped) 
+                if (currentWallClingTimer > 0 && !hasWallJumped)
                 {
                     canCling = true;
                     endCling = false;
-                } 
-                else if (Vector3.ProjectOnPlane(RB.velocity, wallJumpPointHit.normal).magnitude >= wallSpeedThreshHold && !endCling && !hasWallJumped) 
+                }
+                else if (Vector3.ProjectOnPlane(RB.velocity, wallJumpPointHit.normal).magnitude >= wallSpeedThreshHold && !endCling && !hasWallJumped)
                 {
                     canCling = true;
                 }
@@ -303,85 +305,85 @@ public class PlayerControllerScript : MonoBehaviour
                 }
             }
         }
-        else 
+        else
         {
             canCling = false;
         }
 
-        if (canCling) 
+        if (canCling)
         {
             velocity += -playerTransform.up * RB.velocity.y * ShiftInput();
         }
     }
 
-    private void StateSwitch() 
+    private void StateSwitch()
     {
         if (grounded)
         {
             statePlayer = State.Ground;
         }
-        else 
+        else
         {
             statePlayer = State.Air;
         }
     }
 
     // improve snap
-    private void GroundSnap() 
+    private void GroundSnap()
     {
         playerTransform.position = groundedRayPoint.point;
     }
 
-    private void AirDrag() 
+    private void AirDrag()
     {
         Vector3 XZPlanarVelocity = Vector3.ProjectOnPlane(RB.velocity, playerTransform.up);
-        if (XZPlanarVelocity.magnitude != 0f) 
+        if (XZPlanarVelocity.magnitude != 0f)
         {
-            if (XZPlanarVelocity.magnitude >= airMaxSpeed) 
+            if (XZPlanarVelocity.magnitude >= airMaxSpeed)
             {
                 velocity -= XZPlanarVelocity.normalized * acceleration;
-            } 
-            else 
+            }
+            else
             {
-                
-                if (XZPlanarVelocity.magnitude <  airDrag) 
+
+                if (XZPlanarVelocity.magnitude < airDrag)
                 {
                     velocity -= XZPlanarVelocity;
-                } 
-                else 
+                }
+                else
                 {
                     velocity -= XZPlanarVelocity.normalized * airDrag;
                 }
-        
+
             }
-        } 
-    }
-
-    private void WallCheck(Vector3 movingForce) 
-    {
-
-        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);        
-        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
-    }
-
-    private void WallJumpCheck(Vector3 movingForce) 
-    {
-
-        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height/2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallJumpPointHit, wallJumpThreshold + sphereRayOffset);        
-        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
-    }
-
-    private void WallUnstick(Vector3 movingForce) 
-    {
-        if(wallBound) 
-        {
-            velocity += Vector3.ProjectOnPlane(wallPointHit.normal,Vector3.up).normalized * movingForce.magnitude;
         }
     }
 
-    public bool AirFetch() 
+    private void WallCheck(Vector3 movingForce)
     {
-        return statePlayer == State.Air ? true : false ;
+
+        wallBound = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
+        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
+    }
+
+    private void WallJumpCheck(Vector3 movingForce)
+    {
+
+        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallJumpPointHit, wallJumpThreshold + sphereRayOffset);
+        //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
+    }
+
+    private void WallUnstick(Vector3 movingForce)
+    {
+        if (wallBound)
+        {
+            velocity += Vector3.ProjectOnPlane(wallPointHit.normal, Vector3.up).normalized * movingForce.magnitude;
+        }
+    }
+
+    public bool AirFetch()
+    {
+        return statePlayer == State.Air ? true : false;
     }
 
     public float JumpHeightFetch()
@@ -389,12 +391,45 @@ public class PlayerControllerScript : MonoBehaviour
         return jumpHeight;
     }
 
-    private void CheckStun() 
+    private void CheckStun()
     {
         stunned = playerCombatScript.Stunned();
     }
 
+    /// <summary>
+    ///
+    /// 
+    /// 
+    /// Spacing between physics and animation funtion declaration.
+    /// 
+    /// 
+    /// 
+    /// </summary>
+
+    private void CheckAnim(Vector3 movingForce) 
+    {
+        Debug.Log(movingForce.magnitude);
+        if (movingForce.magnitude > 0 && statePlayer == State.Ground)
+        {
+            playerAnimationBehaviour.MovingTriggerSet(true);
+            playerAnimationBehaviour.IdlingTriggerSet(false);
+        }
+        else 
+        {
+            playerAnimationBehaviour.IdlingTriggerSet(true);
+            playerAnimationBehaviour.MovingTriggerSet(false);
+        }
+    }
+
+
 }
+
+
+
+
+
+
+
 
 static class ExtensionMethods
 {

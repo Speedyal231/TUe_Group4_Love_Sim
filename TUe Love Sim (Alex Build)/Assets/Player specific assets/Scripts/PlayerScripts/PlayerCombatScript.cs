@@ -15,6 +15,7 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] PlayerControllerScript playerControllerScript;
     [SerializeField] NPCData enemyData;
     [SerializeField] PlayerData playerData;
+    [SerializeField] PlayerAnimationBehaviour playerAnimationBehaviour;
     private PlayerInputActions playerInputActions;
     
     [Header("Punch and Attack Values")]
