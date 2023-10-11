@@ -55,7 +55,8 @@ public class PlayerControllerScript : MonoBehaviour
     bool hasWallJumped;
     bool canCling;
     bool endCling;
-    bool canJump;
+    bool hasJumped;
+    bool landing;
 
 
 
@@ -255,12 +256,25 @@ public class PlayerControllerScript : MonoBehaviour
     {
         if (statePlayer == State.Ground)
         {
+            if (hasJumped)
+            {
+                landing = true;
+            }
+            else 
+            {
+                landing = false;
+            } 
             prevObjectWall = null;
+            hasJumped = false;
         }
         float jumpVal = JumpInput();
         if (statePlayer == State.Ground)
         {
-            velocity += playerTransform.up.normalized * jumpHeight * jumpVal;
+            if (jumpVal > 0) 
+            {
+                velocity += playerTransform.up.normalized * jumpHeight * jumpVal;
+                hasJumped = true;
+            }
         }
         else if (statePlayer == State.Air)
         {
@@ -414,22 +428,38 @@ public class PlayerControllerScript : MonoBehaviour
             playerAnimationBehaviour.MovingTriggerSet(true);
             playerAnimationBehaviour.IdlingTriggerSet(false);
         }
-        else 
+        else
         {
             playerAnimationBehaviour.IdlingTriggerSet(true);
             playerAnimationBehaviour.MovingTriggerSet(false);
         }
+        if (hasJumped) 
+        {
+            if (statePlayer == State.Ground)
+            {
+                playerAnimationBehaviour.JumpPressTriggerSet(true);
+            }
+            else
+            {
+                playerAnimationBehaviour.JumpPressTriggerSet(false);
+            }
+        }
+        if (statePlayer == State.Air)
+        {
+            playerAnimationBehaviour.IdlingTriggerSet(false);
+            playerAnimationBehaviour.GroundedTriggerSet(false);
+            playerAnimationBehaviour.InAirTriggerSet(true);
+        }
+        else 
+        {
+            playerAnimationBehaviour.GroundedTriggerSet(true);
+            playerAnimationBehaviour.InAirTriggerSet(false);
+        }
+            
     }
 
 
 }
-
-
-
-
-
-
-
 
 static class ExtensionMethods
 {

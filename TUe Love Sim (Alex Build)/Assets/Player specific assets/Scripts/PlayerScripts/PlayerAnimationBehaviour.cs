@@ -35,6 +35,6 @@ public class PlayerAnimationBehaviour : MonoBehaviour
 
     public void JumpPressTriggerSet(bool active)
     {
-        if (active) animator.SetTrigger(inAirTrigger); else animator.ResetTrigger(inAirTrigger);
+        if (active) animator.SetTrigger(jumpPressTrigger); else animator.ResetTrigger(jumpPressTrigger);
     }
 }
