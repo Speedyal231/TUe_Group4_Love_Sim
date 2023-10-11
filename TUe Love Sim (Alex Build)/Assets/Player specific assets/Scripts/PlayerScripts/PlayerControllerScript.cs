@@ -404,7 +404,7 @@ static class ExtensionMethods
     /// <param name="vector3"></param>
     /// <param name="decimalPlaces"></param>
     /// <returns></returns>
-    public static Vector3 Round(this Vector3 vector3, int decimalPlaces = 2)
+    public static Vector3 Round(this Vector3 vector3, int decimalPlaces = 1)
     {
         float multiplier = 1;
         for (int i = 0; i < decimalPlaces; i++)
