@@ -27,6 +27,7 @@ public class PlayerControllerScript : MonoBehaviour
     RaycastHit wallPointHit;
     RaycastHit wallJumpPointHit;
     Vector3 prevWallNormal;
+    Collider prevObjectWall;
     bool stunned;
 
     //Variables that contribute to and store object collisions and raycast data
@@ -250,6 +251,10 @@ public class PlayerControllerScript : MonoBehaviour
 
     private void NewJump() 
     {
+        if (statePlayer == State.Ground)
+        {
+            prevObjectWall = null;
+        }
         float jumpVal = JumpInput();
         if (statePlayer == State.Ground)
         {
@@ -271,15 +276,16 @@ public class PlayerControllerScript : MonoBehaviour
         float clingVal = ShiftInput();
         if (canWallJump)
         {
-            if (clingVal > 0 && prevWallNormal != wallJumpPointHit.normal.normalized)
+            if (clingVal > 0 && (ExtensionMethods.Round(prevWallNormal.normalized) - ExtensionMethods.Round(wallJumpPointHit.normal.normalized) != Vector3.zero))
             {
                 currentWallClingTimer = wallClingTimer;
                 canCling = true;
                 prevWallNormal = wallJumpPointHit.normal.normalized;
+                prevObjectWall = wallJumpPointHit.collider;
                 hasWallJumped = false;
                 
             }
-            else if (clingVal > 0 && prevWallNormal == wallJumpPointHit.normal.normalized) 
+            else if (clingVal > 0 && (ExtensionMethods.Round(prevWallNormal.normalized) - ExtensionMethods.Round(wallJumpPointHit.normal.normalized) == Vector3.zero)) 
             {
                 if (currentWallClingTimer > 0 && !hasWallJumped) 
                 {
@@ -388,4 +394,26 @@ public class PlayerControllerScript : MonoBehaviour
         stunned = playerCombatScript.Stunned();
     }
 
-} 
+}
+
+static class ExtensionMethods
+{
+    /// <summary>
+    /// Rounds Vector3.
+    /// </summary>
+    /// <param name="vector3"></param>
+    /// <param name="decimalPlaces"></param>
+    /// <returns></returns>
+    public static Vector3 Round(this Vector3 vector3, int decimalPlaces = 2)
+    {
+        float multiplier = 1;
+        for (int i = 0; i < decimalPlaces; i++)
+        {
+            multiplier *= 10f;
+        }
+        return new Vector3(
+            Mathf.Round(vector3.x * multiplier) / multiplier,
+            Mathf.Round(vector3.y * multiplier) / multiplier,
+            Mathf.Round(vector3.z * multiplier) / multiplier);
+    }
+}
