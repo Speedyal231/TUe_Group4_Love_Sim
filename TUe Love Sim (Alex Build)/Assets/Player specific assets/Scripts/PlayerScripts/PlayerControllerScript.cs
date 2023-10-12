@@ -56,7 +56,6 @@ public class PlayerControllerScript : MonoBehaviour
     bool canCling;
     bool endCling;
     bool hasJumped;
-    bool landing;
 
 
 
@@ -97,8 +96,9 @@ public class PlayerControllerScript : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 movingForce = GetMovementVectorNormalized();
-        CheckAnim(movingForce);
+        
         PhysicsCalcInit();
+        CheckAnim(movingForce);
         GroundedCheck();
         StateSwitch();
         Count();
@@ -141,6 +141,7 @@ public class PlayerControllerScript : MonoBehaviour
             NewJump();
         }
 
+        
         ApplyForces();
     }
 
@@ -256,14 +257,6 @@ public class PlayerControllerScript : MonoBehaviour
     {
         if (statePlayer == State.Ground)
         {
-            if (hasJumped)
-            {
-                landing = true;
-            }
-            else 
-            {
-                landing = false;
-            } 
             prevObjectWall = null;
             hasJumped = false;
         }
@@ -299,6 +292,7 @@ public class PlayerControllerScript : MonoBehaviour
                 prevWallNormal = wallJumpPointHit.normal.normalized;
                 prevObjectWall = wallJumpPointHit.collider;
                 hasWallJumped = false;
+                hasJumped = false;
 
             }
             else if (clingVal > 0 && (ExtensionMethods.Round(prevWallNormal.normalized) - ExtensionMethods.Round(wallJumpPointHit.normal.normalized) == Vector3.zero))
@@ -423,26 +417,39 @@ public class PlayerControllerScript : MonoBehaviour
     private void CheckAnim(Vector3 movingForce) 
     {
         Debug.Log(movingForce.magnitude);
-        if (movingForce.magnitude > 0 && statePlayer == State.Ground)
+        if (movingForce.magnitude > 0 && RB.velocity.magnitude > 0)
         {
             playerAnimationBehaviour.MovingTriggerSet(true);
             playerAnimationBehaviour.IdlingTriggerSet(false);
-        }
+        } 
         else
         {
             playerAnimationBehaviour.IdlingTriggerSet(true);
             playerAnimationBehaviour.MovingTriggerSet(false);
         }
-        if (hasJumped) 
+
+
+        if (hasJumped)
         {
-            if (statePlayer == State.Ground)
-            {
-                playerAnimationBehaviour.JumpPressTriggerSet(true);
-            }
-            else
-            {
-                playerAnimationBehaviour.JumpPressTriggerSet(false);
-            }
+            playerAnimationBehaviour.JumpPressTriggerSet(true);
+        }
+        else if (hasWallJumped)
+        {
+            playerAnimationBehaviour.JumpPressTriggerSet(true);
+        }
+        else
+        {
+            playerAnimationBehaviour.JumpPressTriggerSet(false);
+        }
+
+
+        if (canCling && !endCling && ShiftInput() > 0)
+        {
+            playerAnimationBehaviour.WalledTriggerSet(true);
+        }
+        else 
+        {
+            playerAnimationBehaviour.WalledTriggerSet(false);
         }
         if (statePlayer == State.Air)
         {

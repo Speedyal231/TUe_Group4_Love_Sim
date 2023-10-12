@@ -83,6 +83,14 @@ public class PlayerCombatScript : MonoBehaviour
             HitBoxSpawn(punchVal);
             Punch(punchVal);
         }
+        if (Stunned())
+        {
+            playerAnimationBehaviour.DamagedSet(true);
+        }
+        else 
+        {
+            playerAnimationBehaviour.DamagedSet(false);
+        }
     }
 
     /// <summary>
@@ -120,6 +128,13 @@ public class PlayerCombatScript : MonoBehaviour
 
     private void Punch(float punchVal)
     {
+        if (punched)
+        {
+            playerAnimationBehaviour.Punch1Set(false);
+            playerAnimationBehaviour.Punch2Set(false);
+            playerAnimationBehaviour.Punch3Set(false);
+            playerAnimationBehaviour.FinisherSet(false);
+        }
         if (currentNextPunchTimer <= 0)
         {
             comboState = CombatState.FirstPunch;
@@ -199,6 +214,7 @@ public class PlayerCombatScript : MonoBehaviour
                                 punched = true;
                                 
 
+
                             }
                             else if (comboState == CombatState.Finisher)
                             {
@@ -208,6 +224,7 @@ public class PlayerCombatScript : MonoBehaviour
                                 npcCombatScript.Finished();
                                 punched = true;
                                 
+
                             }
                         }
                     }
@@ -216,21 +233,25 @@ public class PlayerCombatScript : MonoBehaviour
                 {
                     punched = true;
                 }
-                
+
                 if (comboState == CombatState.FirstPunch)
                 {
+                    playerAnimationBehaviour.Punch1Set(true);
                     comboState = CombatState.SecondPunch;
                 }
                 else if (comboState == CombatState.SecondPunch)
                 {
+                    playerAnimationBehaviour.Punch2Set(true);
                     comboState = CombatState.ThirdPunch;
                 }
                 else if (comboState == CombatState.ThirdPunch)
                 {
+                    playerAnimationBehaviour.Punch3Set(true);
                     comboState = CombatState.Finisher;
                 }
                 else if (comboState == CombatState.Finisher)
                 {
+                    playerAnimationBehaviour.FinisherSet(true);
                     comboState = CombatState.FirstPunch;
                 }
 
