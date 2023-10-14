@@ -8,9 +8,14 @@ public class CameraManager : MonoBehaviour
 
     [Header("Cameras")]
     [SerializeField] private Camera playerCam;
-    [SerializeField] private Camera dialogueCam;
 
     private CameraMovement playerCamController;
+
+    private void Awake()
+    {
+        Camera.main.enabled = false;
+        playerCam.enabled = true;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -24,9 +29,6 @@ public class CameraManager : MonoBehaviour
         }
         instance = this;
 
-        playerCam.enabled = true;
-        dialogueCam.enabled = false;
-
         playerCamController = Camera.main.GetComponent<CameraMovement>();
         if(playerCamController == null)
         {
@@ -37,16 +39,15 @@ public class CameraManager : MonoBehaviour
 
     public void SwitchToCamera(Camera camera)
     {
-        Camera.current.enabled = false;
+        Camera.main.enabled = false;
         camera.enabled = true;
-
     }
-    public void SwitchToDialogueCamera()
+    public void ReturnToMainCamera(Camera current)
     {
-        playerCam.enabled = false;
-        dialogueCam.enabled = true;
-
+        current.enabled = false;
+        playerCam.enabled = true;
     }
+
     public void DisablePlayerCameraMovement()
     {
         playerCamController.enabled = false;
@@ -56,15 +57,5 @@ public class CameraManager : MonoBehaviour
     {
         playerCamController.enabled = true;
     }
-    public void ReturnToMainCamera()
-    {
-        dialogueCam.enabled = false;
-        playerCam.enabled = true;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -23,7 +23,15 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject player;
     private PlayerControllerScript playerController;
     private PlayerInputActions playerInputActions;
+    private Rigidbody playerRigidbody;
+
+    [Header("Timer UI")]
+    [SerializeField] private DialogueTimer dialogueTimer;
+    private float timerDuration = 0;
+
     private Story currentStory;
+    private Camera dialogueCam;
+
 
     private void Awake()
     {
@@ -47,10 +55,17 @@ public class DialogueManager : MonoBehaviour
     {
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
+
         playerController = player.GetComponent<PlayerControllerScript>();
         if (playerController == null)
         {
-            Debug.Log("Dialogue Manager couldn't get the Player Controller Script of the Player.");
+            Debug.Log("Dialogue Manager couldn't get the Player Controller script of the Player.");
+        }
+
+        playerRigidbody = player.GetComponent<Rigidbody>();
+        if (playerRigidbody == null)
+        {
+            Debug.Log("Dialogue Manager couldn't get the Rigidbody component of the Player.");
         }
 
         choicesText = new TextMeshProUGUI[choices.Length];
@@ -62,28 +77,48 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void EnterDialogue(TextAsset inkJSON)
+    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision)
     {
+        // prepare timer
+        timerDuration = timeForDecision;
+
+        // manage inky dialogue
         currentStory = new Story(inkJSON.text);
         dialogueIsPlaying = true;
         dialoguePanel.SetActive(true);  
         ContinueStory();
-        playerController.enabled = false;
-        CameraManager.instance.DisablePlayerCameraMovement();
-        CameraManager.instance.SwitchToDialogueCamera();
 
+        FreezePlayerPosition();
+
+        // manage camera
+        dialogueCam = NPCcam;
+        CameraManager.instance.DisablePlayerCameraMovement();
+        CameraManager.instance.SwitchToCamera(dialogueCam);
 
     }
+
+    private void FreezePlayerPosition()
+    {
+        playerController.enabled = false;
+    }
+
+    private void UnFreezePlayerPosition()
+    {
+        playerController.enabled = true;
+    }
+
     private IEnumerator ExitDialogue()
     {
         yield return new WaitForSeconds(0.2f);
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
         dialogueText.text = "";
-        playerController.enabled = true;
+
+        UnFreezePlayerPosition();
+
+        // manage camera
         CameraManager.instance.EnablePlayerCameraMovement();
-        CameraManager.instance.ReturnToMainCamera();
-        
+        CameraManager.instance.ReturnToMainCamera(dialogueCam);
     }
 
     private void ContinueStory()
@@ -92,8 +127,15 @@ public class DialogueManager : MonoBehaviour
         {
             // set the dialogue line
             dialogueText.text = currentStory.Continue();
+
             // set the player choices for the dialogue line
             DisplayDialogueChoices();
+
+            // set off the timer if there are still some choices to be made by the player
+            if (currentStory.currentChoices.Count > 0)
+            {
+                dialogueTimer.RunTimer(timerDuration, currentStory);
+            }
         }
         else
         {
@@ -107,6 +149,7 @@ public class DialogueManager : MonoBehaviour
         {
             return;
         }
+
         // When player presses space (jump), next dialogue line is read
         if(playerInputActions.Keyboard.Jump.ReadValue<float>() == 1)
         {
@@ -127,7 +170,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         int index = 0;
-        // Set all UI choices being used to active and set their text according to the INK file
+        // set all UI choices being used to active and set their text according to the INK file
         foreach (Choice choice in currentChoices)
         {
             choices[index].gameObject.SetActive(true);
@@ -154,6 +197,16 @@ public class DialogueManager : MonoBehaviour
     public void MakeChoice(int choiceIndex)
     {
         currentStory.ChooseChoiceIndex(choiceIndex);
+        dialogueTimer.CancelTimer();
         ContinueStory();
+    }
+
+    public void TimerFinished(Story storyOnFinish)
+    {
+        if (currentStory.state == storyOnFinish.state)
+        {
+            StartCoroutine(ExitDialogue());
+            //Debug.Log("The timer in the last dialogue event finished before the player made a choice");
+        }
     }
 }
