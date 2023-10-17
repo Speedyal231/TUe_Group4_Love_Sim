@@ -135,6 +135,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e560a66e64895794d99e334e725db8bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &258356537 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8241002503442162597, guid: c40d850b4d7652a4aa8f1062af385af3,
+    type: 3}
+  m_PrefabInstance: {fileID: 3075775466116493873}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &271777381
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,16 +1857,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4040de92672079d41837b4e7fcf859e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1513830512 stripped
+--- !u!114 &1468811510 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1820023025988270815, guid: c40d850b4d7652a4aa8f1062af385af3,
+  m_CorrespondingSourceObject: {fileID: 274068041199011915, guid: 7ce24ac2e905d3c40b1c3a8fcaaf38d1,
     type: 3}
-  m_PrefabInstance: {fileID: 3075775466116493873}
+  m_PrefabInstance: {fileID: 7201849716472740883}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57768a6a220275b42893b49951f6bbf0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c5bfbaf396a8fb41b212700678ea969, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1514949039
@@ -2480,11 +2486,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 102378367156929149, guid: c40d850b4d7652a4aa8f1062af385af3,
-        type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1767315156742199134, guid: c40d850b4d7652a4aa8f1062af385af3,
         type: 3}
       propertyPath: m_RootOrder
@@ -2540,16 +2541,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1820023025988270815, guid: c40d850b4d7652a4aa8f1062af385af3,
+        type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 258356537}
     - target: {fileID: 6135481096994439992, guid: c40d850b4d7652a4aa8f1062af385af3,
         type: 3}
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 724146982}
-    - target: {fileID: 6135481096994439992, guid: c40d850b4d7652a4aa8f1062af385af3,
-        type: 3}
-      propertyPath: playerAnimationBehaviour
-      value: 
-      objectReference: {fileID: 1513830512}
     - target: {fileID: 6712168938583760671, guid: c40d850b4d7652a4aa8f1062af385af3,
         type: 3}
       propertyPath: m_Name
@@ -2565,25 +2566,15 @@ PrefabInstance:
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 724146982}
-    - target: {fileID: 7601014554604875940, guid: c40d850b4d7652a4aa8f1062af385af3,
+    - target: {fileID: 8919695090476137988, guid: c40d850b4d7652a4aa8f1062af385af3,
         type: 3}
-      propertyPath: playerAnimationBehaviour
-      value: 
-      objectReference: {fileID: 1513830512}
-    - target: {fileID: 7877776509130156219, guid: c40d850b4d7652a4aa8f1062af385af3,
-        type: 3}
-      propertyPath: m_UpdateMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8695042046129973261, guid: c40d850b4d7652a4aa8f1062af385af3,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
+      propertyPath: m_LocalPosition.y
+      value: 1.585
       objectReference: {fileID: 0}
     - target: {fileID: 8919695090476137988, guid: c40d850b4d7652a4aa8f1062af385af3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.18
+      value: 0.186
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2779,6 +2770,11 @@ PrefabInstance:
       propertyPath: playerData
       value: 
       objectReference: {fileID: 1436331730}
+    - target: {fileID: 1577003193041613988, guid: 7ce24ac2e905d3c40b1c3a8fcaaf38d1,
+        type: 3}
+      propertyPath: npcMovement
+      value: 
+      objectReference: {fileID: 1468811510}
     - target: {fileID: 1577003193041613988, guid: 7ce24ac2e905d3c40b1c3a8fcaaf38d1,
         type: 3}
       propertyPath: punchCooldown

@@ -12,6 +12,7 @@ public class NPCCombatScript : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
     [SerializeField] NPCData characterData;
     [SerializeField] PlayerData playerData;
+    [SerializeField] NPCMovement npcMovement;
 
     [Header("Stun and damadge effects")]
     [SerializeField] float punchStunTime;
@@ -86,12 +87,14 @@ public class NPCCombatScript : MonoBehaviour
         {
             characterData.ChangeHealth(-playerData.PunchDamage());
         }
+
     }
 
     public void Finished()
     {
         currentFinisherStunTime = finisherStunTime;
         currentPunchStunTime = punchStunTime;
+        npcMovement.playerInRange = true;
         if (characterData.FetchHealth() <= playerData.FinisherDamage())
         {
             characterData.ChangeHealth(-characterData.FetchHealth());

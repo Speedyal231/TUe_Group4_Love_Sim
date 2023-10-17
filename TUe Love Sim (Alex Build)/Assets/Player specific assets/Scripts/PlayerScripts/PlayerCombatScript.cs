@@ -261,6 +261,11 @@ public class PlayerCombatScript : MonoBehaviour
 
     public void PlayerDamage() 
     {
+        playerAnimationBehaviour.Punch1Set(false);
+        playerAnimationBehaviour.Punch2Set(false);
+        playerAnimationBehaviour.Punch3Set(false);
+        playerAnimationBehaviour.FinisherSet(false);
+        comboState = CombatState.FirstPunch;
         currentHitStuntTime = hitStunTime;
         if (playerData.FetchHealth() <= enemyData.PunchDamage())
         {

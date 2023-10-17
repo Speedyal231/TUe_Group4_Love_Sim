@@ -56,7 +56,7 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] LayerMask playerLayer;
     RaycastHit wallRangeRay;
     RaycastHit pointWallTouchData;
-    bool playerInRange;
+    public bool playerInRange;
     bool seen;
     bool stunned;
     bool walled;

@@ -192,11 +192,12 @@ MonoBehaviour:
     m_Bits: 8
   characterData: {fileID: 8013666791676500459}
   playerData: {fileID: 0}
+  npcMovement: {fileID: 274068041199011915}
   punchStunTime: 0.5
-  finisherStunTime: 3
+  finisherStunTime: 2
   sphereRayOffset: 0.1
   hitRange: 0.1
-  punchCooldown: 2
+  punchCooldown: 1
   knockback: 100
 --- !u!114 &274068041199011915
 MonoBehaviour:
@@ -239,10 +240,12 @@ MonoBehaviour:
   groundMaxSpeedInRange: 20
   airMaxSpeedInRange: 21
   comabtRadius: 60
+  seenRange: 30
   sphereRayOffset: 0.1
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
+  playerInRange: 0
 --- !u!114 &8013666791676500459
 MonoBehaviour:
   m_ObjectHideFlags: 0
