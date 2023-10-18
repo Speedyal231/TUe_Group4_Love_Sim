@@ -416,7 +416,6 @@ public class PlayerControllerScript : MonoBehaviour
 
     private void CheckAnim(Vector3 movingForce) 
     {
-        Debug.Log(movingForce.magnitude);
         if (movingForce.magnitude > 0 && RB.velocity.magnitude > 0)
         {
             playerAnimationBehaviour.MovingTriggerSet(true);

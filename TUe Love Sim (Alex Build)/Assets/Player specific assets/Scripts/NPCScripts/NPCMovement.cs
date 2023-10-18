@@ -315,7 +315,7 @@ public class NPCMovement : MonoBehaviour
             playerInRange = true;
             seen = true;
         }
-        else if ((comabtRadius > (posDif).magnitude && seen)) 
+        else if ((comabtRadius > (posDif).magnitude && seen) || playerInRange && comabtRadius > (posDif).magnitude) 
         {
             playerInRange = true;
         }
@@ -324,8 +324,6 @@ public class NPCMovement : MonoBehaviour
             playerInRange = false;
             seen = false;
         }
-        Debug.Log(playerInRange);
-        Debug.Log(angleDif);
     }
 
     private void WallCheck()
@@ -358,13 +356,11 @@ public class NPCMovement : MonoBehaviour
     private void MoveCheck()
     {
         shouldTurn = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height/2), characterTransform.forward, out wallRangeRay, wallTurnRange, groundLayer);
-        //Debug.Log(shouldTurn);
     }
 
     private void FloorCheck()
     {
-        floored = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height), characterTransform.forward - characterTransform.up *1/2, floorTurnRange, groundLayer);
-        //Debug.Log(floored);
+        floored = Physics.Raycast(characterTransform.position + (characterTransform.up.normalized * capsuleCollider.height), characterTransform.forward - characterTransform.up *1/2, floorTurnRange, groundLayer); 
     }
 
     private void RandomDirectionGen() 

@@ -78,7 +78,9 @@ public class NPCCombatScript : MonoBehaviour
 
     public void Punched()
     {
+        
         currentPunchStunTime = punchStunTime;
+        npcMovement.playerInRange = true;
         if (characterData.FetchHealth() <= playerData.PunchDamage())
         {
             characterData.ChangeHealth(-characterData.FetchHealth());
