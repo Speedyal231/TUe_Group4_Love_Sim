@@ -96,7 +96,6 @@ public class NPCCombatScript : MonoBehaviour
     {
         currentFinisherStunTime = finisherStunTime;
         currentPunchStunTime = punchStunTime;
-        npcMovement.playerInRange = true;
         if (characterData.FetchHealth() <= playerData.FinisherDamage())
         {
             characterData.ChangeHealth(-characterData.FetchHealth());
