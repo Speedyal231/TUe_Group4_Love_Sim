@@ -13,13 +13,20 @@ public class DialogueInteractable : MonoBehaviour
     [Header("NPC camera (dialogue)")]
     [SerializeField] private Camera dialogueCam;
 
-    [Header("Amount of time for the player to make a choice")]
+    [Header("Amount of time for the player to make a choice [s]")]
     [SerializeField] private float timeForDecision;
+
+    [Header("NPC difficulty level: defines how hard it is to rizz up the NPC. ")]
+    [Range(1,4)]
+    [SerializeField] private int difficultyLevel;
+
 
     private bool activateCue;
 
+
+
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         activateCue = false;
         visualCue.SetActive(false);
@@ -52,8 +59,9 @@ public class DialogueInteractable : MonoBehaviour
     public void EnterDialogue(GameObject player)
     {
         Debug.Log("Dialogue sequence entered");
-        DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision);
+        DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel);
     }
+
     void TextFacePlayer(GameObject player)
     {
         Vector3 playerPosition = player.transform.position;

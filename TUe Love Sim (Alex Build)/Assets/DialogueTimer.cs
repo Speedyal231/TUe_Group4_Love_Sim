@@ -8,10 +8,12 @@ public class DialogueTimer : MonoBehaviour
 {
     [Header("Timer bar")]
     [SerializeField] private GameObject timerBar;
+
     private void Start()
     {
         this.gameObject.SetActive(false);
     }
+
     public void RunTimer(float time, Story currentStory)
     {
         this.gameObject.SetActive(true);

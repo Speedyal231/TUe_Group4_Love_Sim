@@ -31,6 +31,7 @@ public class DialogueManager : MonoBehaviour
 
     private Story currentStory;
     private Camera dialogueCam;
+    private int NPC_difficulty;
 
 
     private void Awake()
@@ -77,7 +78,7 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision)
+    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty)
     {
         // prepare timer
         timerDuration = timeForDecision;
@@ -94,6 +95,9 @@ public class DialogueManager : MonoBehaviour
         dialogueCam = NPCcam;
         CameraManager.instance.DisablePlayerCameraMovement();
         CameraManager.instance.SwitchToCamera(dialogueCam);
+
+        // set NPC difficulty
+        NPC_difficulty = difficulty;
 
     }
 
@@ -206,7 +210,8 @@ public class DialogueManager : MonoBehaviour
         if (currentStory.state == storyOnFinish.state)
         {
             StartCoroutine(ExitDialogue());
-            //Debug.Log("The timer in the last dialogue event finished before the player made a choice");
-        }
+            Debug.Log("The player didn't make a choice in time. He loses points or whatever ");
+            // add logic to punish the player for not choosing in time
+        } 
     }
 }
