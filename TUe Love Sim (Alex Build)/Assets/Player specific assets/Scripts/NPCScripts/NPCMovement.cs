@@ -329,7 +329,7 @@ public class NPCMovement : MonoBehaviour
     private void WallCheck()
     {
         Vector3 NPCDirection = playerTransform.position - characterTransform.position;
-        walled = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallTouchThreshold + sphereRayOffset, groundLayer);
+        walled = Physics.SphereCast(characterTransform.position + (characterTransform.up.normalized * (capsuleCollider.height / 3)) - (sphereRayOffset * NPCDirection.normalized), capsuleCollider.radius, characterTransform.forward, out pointWallTouchData, wallTouchThreshold + sphereRayOffset, groundLayer);
 
     }
 

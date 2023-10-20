@@ -24,6 +24,7 @@ public class DialogueManager : MonoBehaviour
     private PlayerControllerScript playerController;
     private PlayerInputActions playerInputActions;
     private Rigidbody playerRigidbody;
+    [SerializeField] private Rigidbody enemyRigidbody;
 
     [Header("Timer UI")]
     [SerializeField] private DialogueTimer dialogueTimer;
@@ -104,11 +105,15 @@ public class DialogueManager : MonoBehaviour
     private void FreezePlayerPosition()
     {
         playerController.enabled = false;
+        enemyRigidbody.isKinematic = true;
+        playerRigidbody.isKinematic = true;
     }
 
     private void UnFreezePlayerPosition()
     {
         playerController.enabled = true;
+        enemyRigidbody.isKinematic = false;
+        playerRigidbody.isKinematic = false;
     }
 
     private IEnumerator ExitDialogue()

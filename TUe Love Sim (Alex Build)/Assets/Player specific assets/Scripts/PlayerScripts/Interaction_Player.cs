@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Interaction_Player : MonoBehaviour
 {
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Rigidbody rbNPC;
     [SerializeField] private GameObject cameraPlayer;
     private PlayerInputActions playerInputActions;
     private RaycastHit hit;
@@ -48,7 +50,9 @@ public class Interaction_Player : MonoBehaviour
                 dialogueInteractable.TriggerVisualCue(this.gameObject);
                 if (playerInputActions.Keyboard.Interact.ReadValue<float>() == 1)
                 {
+                    
                     dialogueInteractable.EnterDialogue(this.gameObject);
+                    
                 }
             }
 
