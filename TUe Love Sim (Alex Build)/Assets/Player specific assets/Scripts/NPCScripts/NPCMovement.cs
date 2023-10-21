@@ -12,6 +12,7 @@ public class NPCMovement : MonoBehaviour
     [SerializeField] Transform playerTransform;
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] NPCCombatScript NPCCombat;
+    [SerializeField] EnemyAnimationBehaviour EnemyAnimation;
 
 
     [Header("Movement")]
@@ -90,6 +91,7 @@ public class NPCMovement : MonoBehaviour
     private void FixedUpdate()
     {
         PhysicsCalcInit();
+        CheckAnim();
         GroundedCheck();
         StateSwitch();
         CombatRangeCheck();
@@ -343,6 +345,11 @@ public class NPCMovement : MonoBehaviour
         if (this.state == State.Ground && (walled || !floored) && playerInRange)
         {
             velocity += characterTransform.up.normalized * jumpHeight;
+            EnemyAnimation.JumpPressTriggerSet(true);
+        }
+        else 
+        {
+            EnemyAnimation.JumpPressTriggerSet(false);
         }
     }
     private void WallUnstick()
@@ -371,6 +378,43 @@ public class NPCMovement : MonoBehaviour
             randomSpeed = Random.Range(0, docileMaxSpeed + 2);
             currentRandyTime = randyTime;
         }
+    }
+
+    private void CheckAnim()
+    {
+        if (state == State.Ground)
+        {
+            EnemyAnimation.GroundedTriggerSet(true);
+            EnemyAnimation.InAirTriggerSet(false);
+            if (!((randomSpeed > docileMaxSpeed) && !playerInRange))
+            {
+                if (playerInRange)
+                {
+                    EnemyAnimation.MovingTriggerSet(true);
+                    EnemyAnimation.WalkTriggerSet(false);
+                    EnemyAnimation.IdlingTriggerSet(false);
+                }
+                else
+                {
+                    EnemyAnimation.MovingTriggerSet(false);
+                    EnemyAnimation.WalkTriggerSet(true);
+                    EnemyAnimation.IdlingTriggerSet(false);
+                }
+            }
+            else
+            {
+                EnemyAnimation.IdlingTriggerSet(true);
+                EnemyAnimation.MovingTriggerSet(false);
+                EnemyAnimation.WalkTriggerSet(false);
+            }
+        }
+        else 
+        {
+            EnemyAnimation.InAirTriggerSet(true);
+            EnemyAnimation.GroundedTriggerSet(false);
+        }
+
+        
     }
 
 }

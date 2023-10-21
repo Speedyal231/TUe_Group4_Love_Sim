@@ -377,7 +377,7 @@ public class PlayerControllerScript : MonoBehaviour
     private void WallJumpCheck(Vector3 movingForce)
     {
 
-        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallJumpPointHit, wallJumpThreshold + sphereRayOffset);
+        canWallJump = Physics.SphereCast(transform.position + (transform.up.normalized * (capsuleCollider.height / 2)) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallJumpPointHit, wallJumpThreshold + sphereRayOffset, groundLayer);
         //wallBound = Physics.CapsuleCast(transform.position - (sphereRayOffset * movingForce.normalized), transform.position + (transform.up.normalized * capsuleCollider.height) - (sphereRayOffset * movingForce.normalized), capsuleCollider.radius, movingForce, out wallPointHit, wallTouchThreshold + sphereRayOffset);
     }
 

@@ -13,6 +13,7 @@ public class NPCCombatScript : MonoBehaviour
     [SerializeField] NPCData characterData;
     [SerializeField] PlayerData playerData;
     [SerializeField] NPCMovement npcMovement;
+    [SerializeField] EnemyAnimationBehaviour EnemyAnimation;
 
     [Header("Stun and damadge effects")]
     [SerializeField] float punchStunTime;
@@ -27,6 +28,7 @@ public class NPCCombatScript : MonoBehaviour
     float currentFinisherStunTime;
     bool inRange;
     RaycastHit hit;
+    bool died = false;
 
     /// <summary>
     ///
@@ -45,13 +47,50 @@ public class NPCCombatScript : MonoBehaviour
     {
         if (characterData.FetchDead())
         {
-
+            Count();
+            if (!died)
+            {
+                EnemyAnimation.DeadTriggerSet(true);
+                
+                if (currentPunchStunTime <= 0) 
+                {
+                    died = true;
+                    EnemyAnimation.MovingTriggerSet(false);
+                    EnemyAnimation.WalkTriggerSet(false);
+                    EnemyAnimation.IdlingTriggerSet(false);
+                    EnemyAnimation.PunchTriggerSet(false);
+                    EnemyAnimation.FlyingTriggerSet(false);
+                    EnemyAnimation.HitTriggerSet(false);
+                    EnemyAnimation.InAirTriggerSet(false);
+                    EnemyAnimation.JumpPressTriggerSet(false);
+                    EnemyAnimation.GroundedTriggerSet(false);
+                }
+            }
+            else
+            {
+                EnemyAnimation.DeadTriggerSet(false);
+                EnemyAnimation.MovingTriggerSet(false);
+                EnemyAnimation.WalkTriggerSet(false);
+                EnemyAnimation.IdlingTriggerSet(false);
+                EnemyAnimation.PunchTriggerSet(false);
+                EnemyAnimation.FlyingTriggerSet(false);
+                EnemyAnimation.HitTriggerSet(false);
+                EnemyAnimation.InAirTriggerSet(false);
+                EnemyAnimation.JumpPressTriggerSet(false);
+                EnemyAnimation.GroundedTriggerSet(false);
+            }
         }
         else 
         {
+            EnemyAnimation.DeadTriggerSet(false);
             Count();
             CanHit();
             Punch();
+            if (!StunCheck()) 
+            {
+                EnemyAnimation.HitTriggerSet(false);
+                EnemyAnimation.FlyingTriggerSet(false);
+            }
         }
     }
 
@@ -81,6 +120,10 @@ public class NPCCombatScript : MonoBehaviour
         
         currentPunchStunTime = punchStunTime;
         npcMovement.playerInRange = true;
+        if (!died) 
+        {
+            EnemyAnimation.HitTriggerSet(true);
+        }
         if (characterData.FetchHealth() <= playerData.PunchDamage())
         {
             characterData.ChangeHealth(-characterData.FetchHealth());
@@ -96,6 +139,10 @@ public class NPCCombatScript : MonoBehaviour
     {
         currentFinisherStunTime = finisherStunTime;
         currentPunchStunTime = punchStunTime;
+        if (!died) 
+        {
+            EnemyAnimation.FlyingTriggerSet(true);
+        }
         if (characterData.FetchHealth() <= playerData.FinisherDamage())
         {
             characterData.ChangeHealth(-characterData.FetchHealth());
@@ -129,14 +176,19 @@ public class NPCCombatScript : MonoBehaviour
             canPunch = false;
         }
 
-        if (canPunch) 
+        if (canPunch)
         {
-            if (hit.collider.TryGetComponent(out PlayerCombatScript playerCombatScript)) 
+            if (hit.collider.TryGetComponent(out PlayerCombatScript playerCombatScript))
             {
+                EnemyAnimation.PunchTriggerSet(true);
                 playerCombatScript.PlayerDamage();
                 currentPunchCooldown = punchCooldown;
-                playerRB.velocity += characterTransform.forward.normalized * knockback + playerTransform.up.normalized * knockback / 4; 
+                playerRB.velocity += characterTransform.forward.normalized * knockback + playerTransform.up.normalized * knockback / 4;
             }
+        }
+        else
+        {
+            EnemyAnimation.PunchTriggerSet(false);
         }
         
     }
