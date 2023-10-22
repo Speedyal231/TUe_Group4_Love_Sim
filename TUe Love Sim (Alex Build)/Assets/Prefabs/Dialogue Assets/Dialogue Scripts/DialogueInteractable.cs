@@ -62,19 +62,18 @@ public class DialogueInteractable : MonoBehaviour
 
     public void EnterDialogue(GameObject player)
     {
-        Debug.Log(dialogueNPCData.FetchRizzed());
+        
         if (dialogueNPCData.FetchAttemptsLeft() > 0 && !dialogueNPCData.FetchRizzed())
         {
             Debug.Log("Dialogue sequence entered");
             playerTransform.position = transform.position + transform.forward * 5;
             playerTransform.forward = -transform.forward;
             dialogueNPCData.changeAttemptsLeft(-1);
-            DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel);
-            dialogueNPCData.changeRizzed(dialogueManager.FetchRizzed());
+            DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel, dialogueNPCData);
         }
         else 
         {
-            Debug.Log("Dialogue sequence entered");
+            Debug.Log("Dialogue sequence fail");
         }
             
 

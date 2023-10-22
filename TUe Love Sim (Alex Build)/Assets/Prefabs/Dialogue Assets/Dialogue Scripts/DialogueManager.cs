@@ -36,7 +36,7 @@ public class DialogueManager : MonoBehaviour
     private int NPC_difficulty;
     private string choicesMade;
     private string correctChoices;
-    bool rizzed = false;
+    private DialogueNPCData curdig;
 
 
     private void Awake()
@@ -85,11 +85,11 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty)
+    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty, DialogueNPCData dialogueNPCData)
     {
-        rizzed = false;
         // prepare timer
         timerDuration = timeForDecision;
+        curdig = dialogueNPCData; 
 
         // manage inky dialogue
         currentStory = new Story(inkJSON.text);
@@ -106,6 +106,8 @@ public class DialogueManager : MonoBehaviour
 
         // set NPC difficulty
         NPC_difficulty = difficulty;
+
+        //win condition and finish varibles
         correctChoices = currentStory.variablesState.GetVariableWithName("win").ToString();
         choicesMade = "";
     }
@@ -218,8 +220,8 @@ public class DialogueManager : MonoBehaviour
         choicesMade = choicesMade + choiceIndex.ToString();
         if (correctChoices.Equals(choicesMade)) 
         {
-            playerData.ChangeTargetRizzedCount(1);   
-            rizzed = true;
+            playerData.ChangeTargetRizzedCount(1);
+            curdig.changeRizzed(true);
         }
         currentStory.ChooseChoiceIndex(choiceIndex);
         dialogueTimer.CancelTimer();
@@ -234,11 +236,6 @@ public class DialogueManager : MonoBehaviour
             Debug.Log("The player didn't make a choice in time. He loses points or whatever ");
             // add logic to punish the player for not choosing in time
         } 
-    }
-
-    public bool FetchRizzed() 
-    {
-        return rizzed;
     }
 
 }

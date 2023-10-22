@@ -451,11 +451,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5370436114693268166, guid: c3bfcfe45db61df43a3a658bd0938623,
         type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5370436114693268166, guid: c3bfcfe45db61df43a3a658bd0938623,
-        type: 3}
       propertyPath: m_LocalPosition.x
       value: -30.53
       objectReference: {fileID: 0}
@@ -511,6 +506,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6267006885151004421, guid: c3bfcfe45db61df43a3a658bd0938623,
         type: 3}
+      propertyPath: dialogueManager
+      value: 
+      objectReference: {fileID: 667696394}
+    - target: {fileID: 6267006885151004421, guid: c3bfcfe45db61df43a3a658bd0938623,
+        type: 3}
+      propertyPath: dialogueNPCData
+      value: 
+      objectReference: {fileID: 1047053713}
+    - target: {fileID: 6267006885151004421, guid: c3bfcfe45db61df43a3a658bd0938623,
+        type: 3}
       propertyPath: playerTransform
       value: 
       objectReference: {fileID: 468314394}
@@ -554,8 +559,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dialogue NPC
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2564290114841283173, guid: c3bfcfe45db61df43a3a658bd0938623, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -730,6 +734,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10cbf7b319b171d4096126712f3d083c, type: 3}
+--- !u!114 &1047053713 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 657694128399133152, guid: c3bfcfe45db61df43a3a658bd0938623,
+    type: 3}
+  m_PrefabInstance: {fileID: 689559561}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d70d3c5c71a652042aab761b3990f9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1199877393 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4196928622761676574, guid: 10cbf7b319b171d4096126712f3d083c,
