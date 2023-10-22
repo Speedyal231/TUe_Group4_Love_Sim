@@ -9,6 +9,7 @@ public class DialogueInteractable : MonoBehaviour
     [SerializeField] private GameObject visualCue;
     [SerializeField] private TextAsset inkJSON;
     [SerializeField] private TMP_Text cueText;
+    [SerializeField] private Transform playerTransform;
 
     [Header("NPC camera (dialogue)")]
     [SerializeField] private Camera dialogueCam;
@@ -59,6 +60,8 @@ public class DialogueInteractable : MonoBehaviour
     public void EnterDialogue(GameObject player)
     {
         Debug.Log("Dialogue sequence entered");
+        playerTransform.position = transform.position + transform.forward * 5;
+        playerTransform.forward = -transform.forward;
         DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel);
     }
 

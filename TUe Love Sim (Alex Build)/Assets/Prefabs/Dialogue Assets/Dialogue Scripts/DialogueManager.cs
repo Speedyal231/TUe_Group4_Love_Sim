@@ -13,6 +13,7 @@ public class DialogueManager : MonoBehaviour
     [Header("Dialogue UI")]
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI dialogueText;
+    [SerializeField] PlayerData playerData;
     public bool dialogueIsPlaying { get; private set; }
 
     [Header("Choices UI")]
@@ -33,6 +34,8 @@ public class DialogueManager : MonoBehaviour
     private Story currentStory;
     private Camera dialogueCam;
     private int NPC_difficulty;
+    private string choicesMade;
+    private string correctChoices;
 
 
     private void Awake()
@@ -77,6 +80,8 @@ public class DialogueManager : MonoBehaviour
             choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
             index++;
         }
+
+
     }
 
     public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty)
@@ -99,7 +104,8 @@ public class DialogueManager : MonoBehaviour
 
         // set NPC difficulty
         NPC_difficulty = difficulty;
-
+        correctChoices = currentStory.variablesState.GetVariableWithName("win").ToString();
+        choicesMade = "";
     }
 
     private void FreezePlayerPosition()
@@ -207,6 +213,11 @@ public class DialogueManager : MonoBehaviour
 
     public void MakeChoice(int choiceIndex)
     {
+        choicesMade = choicesMade + choiceIndex.ToString();
+        if (correctChoices.Equals(choicesMade)) 
+        {
+            playerData.ChangeTargetRizzedCount(1);    
+        }
         currentStory.ChooseChoiceIndex(choiceIndex);
         dialogueTimer.CancelTimer();
         ContinueStory();
