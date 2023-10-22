@@ -36,6 +36,7 @@ public class DialogueManager : MonoBehaviour
     private int NPC_difficulty;
     private string choicesMade;
     private string correctChoices;
+    bool rizzed = false;
 
 
     private void Awake()
@@ -86,6 +87,7 @@ public class DialogueManager : MonoBehaviour
 
     public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty)
     {
+        rizzed = false;
         // prepare timer
         timerDuration = timeForDecision;
 
@@ -216,7 +218,8 @@ public class DialogueManager : MonoBehaviour
         choicesMade = choicesMade + choiceIndex.ToString();
         if (correctChoices.Equals(choicesMade)) 
         {
-            playerData.ChangeTargetRizzedCount(1);    
+            playerData.ChangeTargetRizzedCount(1);   
+            rizzed = true;
         }
         currentStory.ChooseChoiceIndex(choiceIndex);
         dialogueTimer.CancelTimer();
@@ -232,4 +235,10 @@ public class DialogueManager : MonoBehaviour
             // add logic to punish the player for not choosing in time
         } 
     }
+
+    public bool FetchRizzed() 
+    {
+        return rizzed;
+    }
+
 }

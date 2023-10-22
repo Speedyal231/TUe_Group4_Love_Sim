@@ -10,6 +10,9 @@ public class DialogueInteractable : MonoBehaviour
     [SerializeField] private TextAsset inkJSON;
     [SerializeField] private TMP_Text cueText;
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private DialogueNPCData dialogueNPCData;
+    [SerializeField] DialogueManager dialogueManager;
+    float prevrizz;
 
     [Header("NPC camera (dialogue)")]
     [SerializeField] private Camera dialogueCam;
@@ -40,7 +43,7 @@ public class DialogueInteractable : MonoBehaviour
 
     void VisualCueHandling()
     {
-        if (activateCue)
+        if (activateCue && (dialogueNPCData.FetchAttemptsLeft() > 0 && !dialogueNPCData.FetchRizzed()))
         {
             visualCue.SetActive(true);
         }
@@ -59,10 +62,22 @@ public class DialogueInteractable : MonoBehaviour
 
     public void EnterDialogue(GameObject player)
     {
-        Debug.Log("Dialogue sequence entered");
-        playerTransform.position = transform.position + transform.forward * 5;
-        playerTransform.forward = -transform.forward;
-        DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel);
+        Debug.Log(dialogueNPCData.FetchRizzed());
+        if (dialogueNPCData.FetchAttemptsLeft() > 0 && !dialogueNPCData.FetchRizzed())
+        {
+            Debug.Log("Dialogue sequence entered");
+            playerTransform.position = transform.position + transform.forward * 5;
+            playerTransform.forward = -transform.forward;
+            dialogueNPCData.changeAttemptsLeft(-1);
+            DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel);
+            dialogueNPCData.changeRizzed(dialogueManager.FetchRizzed());
+        }
+        else 
+        {
+            Debug.Log("Dialogue sequence entered");
+        }
+            
+
     }
 
     void TextFacePlayer(GameObject player)
