@@ -66,7 +66,7 @@ public class DialogueInteractable : MonoBehaviour
         if (dialogueNPCData.FetchAttemptsLeft() > 0 && !dialogueNPCData.FetchRizzed())
         {
             Debug.Log("Dialogue sequence entered");
-            playerTransform.position = transform.position + transform.forward * 5;
+            playerTransform.position = transform.position + transform.forward.normalized * 2;
             playerTransform.forward = -transform.forward;
             dialogueNPCData.changeAttemptsLeft(-1);
             DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel, dialogueNPCData);
