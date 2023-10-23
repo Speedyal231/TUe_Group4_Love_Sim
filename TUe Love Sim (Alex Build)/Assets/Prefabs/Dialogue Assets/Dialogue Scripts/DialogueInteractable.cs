@@ -12,6 +12,7 @@ public class DialogueInteractable : MonoBehaviour
     [SerializeField] private Transform playerTransform;
     [SerializeField] private DialogueNPCData dialogueNPCData;
     [SerializeField] DialogueManager dialogueManager;
+    [SerializeField] DialogueAnims dialogueAnims;
     float prevrizz;
 
     [Header("NPC camera (dialogue)")]
@@ -39,6 +40,7 @@ public class DialogueInteractable : MonoBehaviour
     void Update()
     {
         VisualCueHandling();
+        AnimCheck();
     }
 
     void VisualCueHandling()
@@ -68,8 +70,8 @@ public class DialogueInteractable : MonoBehaviour
             Debug.Log("Dialogue sequence entered");
             playerTransform.position = transform.position + transform.forward.normalized * 2;
             playerTransform.forward = -transform.forward;
-            dialogueNPCData.changeAttemptsLeft(-1);
-            DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel, dialogueNPCData);
+            DialogueManager.instance.EnterDialogue(inkJSON, dialogueCam, timeForDecision, difficultyLevel, dialogueNPCData, dialogueAnims);
+            
         }
         else 
         {
@@ -88,5 +90,20 @@ public class DialogueInteractable : MonoBehaviour
                                     playerPosition.z - textPosition.z);
         Quaternion rotation = Quaternion.LookRotation(delta);
         visualCue.transform.rotation = rotation;
+    }
+
+    private void AnimCheck()
+    {
+        if (dialogueNPCData.FetchRizzed())
+        {
+            dialogueAnims.RizzFailTriggerSet(false);
+            dialogueAnims.ResetTriggerSet(false);
+            dialogueAnims.RizzSuccessTriggerSet(true);
+        }
+        else if (dialogueNPCData.FetchAttemptsLeft() <= 0 && !dialogueNPCData.FetchRizzed())
+        {
+            dialogueAnims.RizzFailTriggerSet(true);
+            dialogueAnims.ResetTriggerSet(false);
+        }
     }
 }

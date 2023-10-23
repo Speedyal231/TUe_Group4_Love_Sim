@@ -7,7 +7,7 @@ VAR win = "01"
         The man dodges. You're a disappointment.
     ** [Sweep kick the stranger from his legs]
         You win.
-* [Insult his mom] 
+* [Insult his mom]
     The man runs away crying
 * [Run away]
     You coward...

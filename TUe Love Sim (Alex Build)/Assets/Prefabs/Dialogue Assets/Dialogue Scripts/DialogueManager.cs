@@ -1,6 +1,7 @@
 using Ink.Runtime;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -37,6 +38,7 @@ public class DialogueManager : MonoBehaviour
     private string choicesMade;
     private string correctChoices;
     private DialogueNPCData curdig;
+    private DialogueAnims curanim;
 
 
     private void Awake()
@@ -85,11 +87,13 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty, DialogueNPCData dialogueNPCData)
+    public void EnterDialogue(TextAsset inkJSON, Camera NPCcam, float timeForDecision, int difficulty, DialogueNPCData dialogueNPCData, DialogueAnims dialogueAnims)
     {
         // prepare timer
         timerDuration = timeForDecision;
         curdig = dialogueNPCData; 
+        curanim = dialogueAnims;
+        curdig.changePrevAttempt(true);
 
         // manage inky dialogue
         currentStory = new Story(inkJSON.text);
@@ -110,6 +114,7 @@ public class DialogueManager : MonoBehaviour
         //win condition and finish varibles
         correctChoices = currentStory.variablesState.GetVariableWithName("win").ToString();
         choicesMade = "";
+        
     }
 
     private void FreezePlayerPosition()
@@ -132,8 +137,17 @@ public class DialogueManager : MonoBehaviour
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
         dialogueText.text = "";
+        if (curdig.FetchPrevAttempt()) 
+        {
+            curdig.changeAttemptsLeft(-1);
+        }
+        curdig.changePrevAttempt(false);
+        
 
         UnFreezePlayerPosition();
+        curanim.RizzFailTriggerSet(false);
+        curanim.ResetTriggerSet(true);
+        curanim.RizzSuccessTriggerSet(false);
 
         // manage camera
         CameraManager.instance.EnablePlayerCameraMovement();
@@ -176,12 +190,12 @@ public class DialogueManager : MonoBehaviour
         {
             ContinueStory();
         }
-
     }
 
     private void DisplayDialogueChoices()
     {
         List<Choice> currentChoices = currentStory.currentChoices;
+        
 
         // send warning if at some point the ink file passes more choices than the set UI limit
         if (currentChoices.Count > choices.Length)
@@ -204,6 +218,14 @@ public class DialogueManager : MonoBehaviour
             choices[i].SetActive(false);
         }
 
+        if (currentStory.currentChoices.Count == 0) 
+        {
+            curanim.RizzFailTriggerSet(true);
+            curanim.ResetTriggerSet(false);
+            curanim.RizzSuccessTriggerSet(false);
+        }
+
+
         // Unity's Event System requires us to select the first choice | we clear it first and then set it in the next frame
         StartCoroutine(SelectFirstChoice());
     }
@@ -218,7 +240,8 @@ public class DialogueManager : MonoBehaviour
     public void MakeChoice(int choiceIndex)
     {
         choicesMade = choicesMade + choiceIndex.ToString();
-        if (correctChoices.Equals(choicesMade)) 
+
+        if (correctChoices.Equals(choicesMade))
         {
             playerData.ChangeTargetRizzedCount(1);
             curdig.changeRizzed(true);

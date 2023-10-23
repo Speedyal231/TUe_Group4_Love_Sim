@@ -6,12 +6,19 @@ public class DialogueNPCData : MonoBehaviour
 {
     [SerializeField] float startAttempts;
     private float attemptsLeft;
+    private bool prevAttempt;
     private bool rizzed;
 
     private void Start()
     {
         rizzed = false;
         attemptsLeft = startAttempts;
+    }
+
+    private void Update()
+    {
+        //Debug.Log(attemptsLeft);
+        //Debug.Log(rizzed);
     }
 
     public float FetchAttemptsLeft() 
@@ -24,6 +31,11 @@ public class DialogueNPCData : MonoBehaviour
         return rizzed;
     }
 
+    public bool FetchPrevAttempt() 
+    { 
+        return prevAttempt;
+    }
+
     public void changeAttemptsLeft(int change)
     {
         attemptsLeft += change;
@@ -32,5 +44,10 @@ public class DialogueNPCData : MonoBehaviour
     public void changeRizzed(bool change) 
     { 
         rizzed = change;
+    }
+
+    public void changePrevAttempt(bool change) 
+    {
+        prevAttempt = change;
     }
 }

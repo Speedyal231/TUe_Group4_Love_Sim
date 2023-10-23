@@ -36,7 +36,7 @@ public class PlayerData : MonoBehaviour
         UpdateDead();
         //Debug.Log(health);
         //Debug.Log(combo);
-        Debug.Log(targetRizzedCount);
+        //Debug.Log(targetRizzedCount);
         //Debug.Log(rizzStatus);
 
     }

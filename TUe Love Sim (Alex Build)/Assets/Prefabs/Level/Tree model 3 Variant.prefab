@@ -31,17 +31,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.84093
+      value: 13.027511
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -133.51
+      value: -2.1735916
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 133.88902
+      value: 8.827019
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
         type: 3}
@@ -83,6 +83,11 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -8243424396642408700, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.08
+      objectReference: {fileID: 0}
     - target: {fileID: -7346953198522695907, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
         type: 3}
       propertyPath: m_Name
@@ -119,7 +124,7 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7506737553427820929}
   m_SourcePrefab: {fileID: 100100000, guid: 78fa844ea29e0314fbcdce82fa01ba8f, type: 3}
---- !u!1 &3793914854286169819 stripped
+--- !u!1 &4279556288540948180 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6668700188412503898, guid: 78fa844ea29e0314fbcdce82fa01ba8f,
     type: 3}
@@ -131,7 +136,7 @@ MeshCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3793914854286169819}
+  m_GameObject: {fileID: 4279556288540948180}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
