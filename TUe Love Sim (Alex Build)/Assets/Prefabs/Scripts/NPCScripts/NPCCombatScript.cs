@@ -181,7 +181,7 @@ public class NPCCombatScript : MonoBehaviour
             if (hit.collider.TryGetComponent(out PlayerCombatScript playerCombatScript))
             {
                 EnemyAnimation.PunchTriggerSet(true);
-                playerCombatScript.PlayerDamage();
+                playerCombatScript.PlayerDamage(characterData.PunchDamage());
                 currentPunchCooldown = punchCooldown;
                 playerRB.velocity += characterTransform.forward.normalized * knockback + playerTransform.up.normalized * knockback / 4;
             }

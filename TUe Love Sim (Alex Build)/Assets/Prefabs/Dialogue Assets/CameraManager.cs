@@ -39,7 +39,10 @@ public class CameraManager : MonoBehaviour
 
     public void SwitchToCamera(Camera camera)
     {
-        Camera.main.enabled = false;
+        foreach (Camera cam in Camera.allCameras)
+        {
+            cam.enabled = false;
+        }
         camera.enabled = true;
     }
     public void ReturnToMainCamera(Camera current)

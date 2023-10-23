@@ -13,7 +13,6 @@ public class PlayerCombatScript : MonoBehaviour
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] Rigidbody RB;
     [SerializeField] PlayerControllerScript playerControllerScript;
-    [SerializeField] NPCData enemyData;
     [SerializeField] PlayerData playerData;
     [SerializeField] PlayerAnimationBehaviour playerAnimationBehaviour;
     private PlayerInputActions playerInputActions;
@@ -259,7 +258,7 @@ public class PlayerCombatScript : MonoBehaviour
         }
     }
 
-    public void PlayerDamage() 
+    public void PlayerDamage(float enemyDamage) 
     {
         playerAnimationBehaviour.Punch1Set(false);
         playerAnimationBehaviour.Punch2Set(false);
@@ -267,13 +266,13 @@ public class PlayerCombatScript : MonoBehaviour
         playerAnimationBehaviour.FinisherSet(false);
         comboState = CombatState.FirstPunch;
         currentHitStuntTime = hitStunTime;
-        if (playerData.FetchHealth() <= enemyData.PunchDamage())
+        if (playerData.FetchHealth() <= enemyDamage)
         {
             playerData.ChangeHealth(-playerData.FetchHealth());
         }
         else
         {
-            playerData.ChangeHealth(-enemyData.PunchDamage());
+            playerData.ChangeHealth(-enemyDamage);
         }
     }
 

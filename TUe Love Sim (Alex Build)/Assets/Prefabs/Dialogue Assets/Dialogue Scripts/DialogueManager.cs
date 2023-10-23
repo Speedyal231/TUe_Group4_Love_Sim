@@ -26,7 +26,7 @@ public class DialogueManager : MonoBehaviour
     private PlayerControllerScript playerController;
     private PlayerInputActions playerInputActions;
     private Rigidbody playerRigidbody;
-    [SerializeField] private Rigidbody enemyRigidbody;
+    [SerializeField] private GameObject enemies;
 
     [Header("Timer UI")]
     [SerializeField] private DialogueTimer dialogueTimer;
@@ -106,6 +106,7 @@ public class DialogueManager : MonoBehaviour
         // manage camera
         dialogueCam = NPCcam;
         CameraManager.instance.DisablePlayerCameraMovement();
+        Debug.Log(dialogueCam);
         CameraManager.instance.SwitchToCamera(dialogueCam);
 
         // set NPC difficulty
@@ -120,14 +121,14 @@ public class DialogueManager : MonoBehaviour
     private void FreezePlayerPosition()
     {
         playerController.enabled = false;
-        enemyRigidbody.isKinematic = true;
+        enemies.SetActive(false);
         playerRigidbody.isKinematic = true;
     }
 
     private void UnFreezePlayerPosition()
     {
         playerController.enabled = true;
-        enemyRigidbody.isKinematic = false;
+        enemies.SetActive(true);
         playerRigidbody.isKinematic = false;
     }
 
