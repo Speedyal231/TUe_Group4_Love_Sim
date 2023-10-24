@@ -12,6 +12,7 @@ public class PlayerData : MonoBehaviour
     private float combo;
     private float targetRizzedCount;
     private bool dead;
+    private float time;
     RizzStatus rizzStatus;
     public enum RizzStatus 
     {
@@ -25,6 +26,7 @@ public class PlayerData : MonoBehaviour
 
     private void Start()
     {
+        time = 0;
         health = startHealth; 
         combo = 0;
         targetRizzedCount = 0;
@@ -34,6 +36,8 @@ public class PlayerData : MonoBehaviour
     private void FixedUpdate()
     {
         UpdateDead();
+        TimeUpdate();
+        //Debug.Log(time);
         //Debug.Log(health);
         //Debug.Log(combo);
         //Debug.Log(targetRizzedCount);
@@ -47,6 +51,13 @@ public class PlayerData : MonoBehaviour
     /// Fetching functions
     /// 
     /// <returns></returns>
+    /// 
+
+    private void TimeUpdate() 
+    {
+        time += Time.deltaTime;
+    }
+
     public float PunchDamage() 
     {
         return punchDamage;
@@ -65,6 +76,11 @@ public class PlayerData : MonoBehaviour
     public float FetchCombo() 
     {
         return combo;
+    }
+
+    public float FetchTime() 
+    {
+        return time;
     }
 
     public float FetchTargetRizzedCount() 
