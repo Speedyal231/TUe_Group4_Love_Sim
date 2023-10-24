@@ -55,6 +55,7 @@ public class NPCCombatScript : MonoBehaviour
                 if (currentPunchStunTime <= 0) 
                 {
                     died = true;
+                    playerData.ChangeKills(1);
                     EnemyAnimation.MovingTriggerSet(false);
                     EnemyAnimation.WalkTriggerSet(false);
                     EnemyAnimation.IdlingTriggerSet(false);

@@ -15,6 +15,7 @@ public class LevelClear : MonoBehaviour
     [SerializeField] TextMeshProUGUI rizzed;
     [SerializeField] TextMeshProUGUI healthBonus;
     [SerializeField] TextMeshProUGUI timeBonus;
+    [SerializeField] TextMeshProUGUI killBonus;
     [SerializeField] TextMeshProUGUI Score;
     [SerializeField] Transform exit;
     [SerializeField] GameObject enemies;
@@ -59,13 +60,18 @@ public class LevelClear : MonoBehaviour
         rizzed.text = playerData.FetchTargetRizzedCount().ToString();
         float healthBonusVal = (playerData.FetchHealth() * 100);
         healthBonus.text = healthBonusVal.ToString();
+
         if (!ended) 
         {
             timeBonusVal = (7000 - Mathf.Round(playerData.FetchTime()) * 10);
             if (timeBonusVal > 0) { timeBonusVal += 1000; } else { timeBonusVal = 1000; }
         }
         timeBonus.text = timeBonusVal.ToString();
-        float ScoreVal = playerData.FetchTargetRizzedCount() * 10000 + healthBonusVal + timeBonusVal;
+
+        float KillBonusVal = (playerData.Fetchkills() * 200);
+        killBonus.text = KillBonusVal.ToString();
+
+        float ScoreVal = playerData.FetchTargetRizzedCount() * 10000 + KillBonusVal + healthBonusVal + timeBonusVal;
         if (playerData.FetchTargetRizzedCount() == 5) { ScoreVal += 20000; }
         Score.text = ScoreVal.ToString();
         ended = true;
