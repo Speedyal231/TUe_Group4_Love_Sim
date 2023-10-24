@@ -65,7 +65,8 @@ public class LevelClear : MonoBehaviour
             if (timeBonusVal > 0) { timeBonusVal += 1000; } else { timeBonusVal = 1000; }
         }
         timeBonus.text = timeBonusVal.ToString();
-        float ScoreVal = playerData.FetchTargetRizzedCount() * 1000 + healthBonusVal + timeBonusVal;
+        float ScoreVal = playerData.FetchTargetRizzedCount() * 10000 + healthBonusVal + timeBonusVal;
+        if (playerData.FetchTargetRizzedCount() == 5) { ScoreVal += 20000; }
         Score.text = ScoreVal.ToString();
         ended = true;
     }
