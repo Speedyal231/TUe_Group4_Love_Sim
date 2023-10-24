@@ -1,0 +1,7 @@
+-add timer 
+-(optional) score per kill
+-implement all above and player data into UI + Lose screen
+-Add Exit area and win screen
+
+-add water kill plane, and other level design stuff. (potential wall jump cooldown)
+
